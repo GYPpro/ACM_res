@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"SYX.C": "cpp",
+			"iostream": "cpp",
+			"ostream": "cpp",
+			"random": "c",
+			"string": "cpp"
+		},
+		"editor.wordWrapColumn": 123,
+		"editor.fontFamily": "Consolas, 'Courier New', monospace"
+	}
+}
