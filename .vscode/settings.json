@@ -4,5 +4,6 @@
     "editor.minimap.maxColumn": 150,
     "files.associations": {
         "iostream": "cpp"
-    }
+    },
+    "todo-tree.tree.scanMode": "workspace only"
 }
