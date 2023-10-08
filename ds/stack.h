@@ -1,23 +1,23 @@
 #include <template_overAll.h>
 
 
-template <class T>
+template <class TYPE_NAME>
 class stackElememt{
 public:
     stackElememt *top;
     stackElememt *base;
-    T data;
+    TYPE_NAME data;
 };
 
-template <class T>
+template <class TYPE_NAME>
 class mystack{
 private:
     // stackElememt<T> *bedrock;
-    stackElememt<T> *upper;
+    stackElememt<TYPE_NAME> *upper;
 public:
     mystack()
     {
-        stackElememt<T> *st = new stackElememt<T>;
+        stackElememt<TYPE_NAME> *st = new stackElememt<TYPE_NAME>;
         // bedrock = st;
         // bedrock->base = bedrock;
         // bedrock->top = bedrock;
@@ -25,19 +25,19 @@ public:
         upper->base = nullptr;
         upper->top = upper;
     }
-    void push(T _t)
+    void push(TYPE_NAME _t)
     {
-        stackElememt<T> *st = new stackElememt<T>;
+        stackElememt<TYPE_NAME> *st = new stackElememt<TYPE_NAME>;
         st->data = _t;
         upper->top = st;
         st->top = st;
         st->base = upper;
         upper = upper->top;
     }
-    T pop()
+    TYPE_NAME pop()
     {
-        T rt = upper->data;
-        stackElememt<T> *st = upper;
+        TYPE_NAME rt = upper->data;
+        stackElememt<TYPE_NAME> *st = upper;
         upper->base->top = upper->base;
         upper = upper->base;
         free(st);
@@ -48,7 +48,7 @@ public:
         for(;;)
         {
             if(upper == nullptr) break;
-            stackElememt<T> *st = upper;
+            stackElememt<TYPE_NAME> *st = upper;
             upper = upper->base;
             free(st);
         }

@@ -2,8 +2,8 @@
 
 
 //TODO:扩展欧几里得
-template <class T>
-T exgcd(T &x,T &y,T a,T b)
+template <class TYPE_NAME>
+TYPE_NAME exgcd(TYPE_NAME &x,TYPE_NAME &y,TYPE_NAME a,TYPE_NAME b)
 {
 
 };

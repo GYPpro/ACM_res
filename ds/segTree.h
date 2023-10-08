@@ -2,10 +2,10 @@
 
 
 //TODO:线段树
-template<class T>
+template<class TYPE_NAME>
 class segtree{
 public:
-    vector<T> p;
+    vector<TYPE_NAME> p;
 
 
 };

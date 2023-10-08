@@ -13,6 +13,9 @@ using namespace std;
 #define ld long double
 const ll int maxn = 1E5+10;
 const ll int mod1 = 998244353;
+const ll int mod2 = 1E9+7;
+
+#define _IN_TEMPLATE_
 
 ll int str2int(string s)
 {

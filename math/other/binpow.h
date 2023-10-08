@@ -1,18 +1,15 @@
+#ifndef _IN_TEMPLATE_
 #include <template_overAll.h>
+#endif
 
-//HACK:快速幂
-
-ll int binpow(ll int x) 
+ll int binpow(ll int a,ll int b) 
 {
-    ll int ans = 1;
-    do
+    ll int res = 1;
+    while (b > 0) 
     {
-        if (x % 2 == 1)
-        {
-            ans *= ans;
-            ans %= mod1;
-        }
-        x >>= 2;
-    } while(x);
-    return ans;
+        if (b & 1) res = res * a % mod1;
+        a = a * a % mod1;
+        b >>= 1;
+    }
+    return res % mod1;    
 }
