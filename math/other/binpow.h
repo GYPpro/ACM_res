@@ -2,7 +2,7 @@
 
 //HACK:快速幂
 
-ll int binpow(ll int x)
+ll int binpow(ll int x) 
 {
     ll int ans = 1;
     do

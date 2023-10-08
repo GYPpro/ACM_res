@@ -11,7 +11,7 @@
             "-g",
             "${file}",
             "-o",
-            "${workspaceFolder}\\OutputFile\\${fileBasenameNoExtension}.exe",
+            "${workspaceFolder}\\.vscode\\OutputFile\\${fileBasenameNoExtension}.exe",
             "-I",
             "${workspaceFolder}",      /*修改成自己放c/c++项目的文件夹，这里的路径和电脑里复制的文件目录有一点不一样，这里是两个反斜杠//*/
             "-std=c++17"

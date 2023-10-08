@@ -8,7 +8,7 @@
             "name": "g++.exe build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\OutputFile\\${fileBasenameNoExtension}.exe",
+            "program": "${workspaceFolder}\\.vscode\\OutputFile\\${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
