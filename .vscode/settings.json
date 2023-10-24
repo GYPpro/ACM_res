@@ -3,7 +3,8 @@
     "editor.fontFamily": "consolas, 'Courier New', monospace",
     "editor.minimap.maxColumn": 150,
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "vector": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only"
 }
