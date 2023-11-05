@@ -4,7 +4,10 @@
     "editor.minimap.maxColumn": 150,
     "files.associations": {
         "iostream": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "*.tcc": "cpp",
+        "deque": "cpp",
+        "string": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only"
 }
