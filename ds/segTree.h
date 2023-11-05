@@ -65,7 +65,7 @@ public:
     }
 };
 
-// HACK:带懒惰标记线段树
+// AC 带懒惰标记线段树 
 template <class TYPE_NAME>
 class lazyTree
 {
@@ -94,7 +94,7 @@ private:
         int m = s + ((t - s) >> 1); //  (s+t)/2
         subbuild(s, m, p * 2);
         subbuild(m + 1, t, p * 2 + 1);
-        d[p] = d[p * 2] + d[(p * 2) + 1];
+        d[p] = d[p * 2] + d[p * 2 + 1];
         //    合并运算符 ↑
     }
 
@@ -103,10 +103,10 @@ private:
         if (l <= s && t <= r)
             return d[p];
         int m = s + ((t - s) >> 1);
-        if (d[p] != 0)
+        if (b[p] != 0)
         {
             d[p * 2] += b[p] * (m - s + 1); // 合并运算符的高阶运算 此处运算为应用懒惰标记
-            d[p * 2] += b[p] * (t - m);     // 合并运算符的高阶运算 此处运算为应用懒惰标记
+            d[p * 2 + 1] += b[p] * (t - m); // 合并运算符的高阶运算 此处运算为应用懒惰标记
             b[p * 2] += b[p];               // 下传标记，无需修改
             b[p * 2 + 1] += b[p];           // 下传标记，无需修改
             b[p] = 0;
@@ -127,12 +127,13 @@ private:
         {
             d[p] += (t - s + 1) * c; // 合并运算符的高阶运算 此处运算为修改整匹配区间值
             b[p] += c;               // 记录懒惰标记，无需修改
+            return;
         }
         int m = s + ((t - s) >> 1);
-        if (d[p] != 0)
+        if (b[p] != 0 && s != t)
         {
             d[p * 2] += b[p] * (m - s + 1); // 合并运算符的高阶运算 此处运算为应用懒惰标记
-            d[p * 2] += b[p] * (t - m);     // 合并运算符的高阶运算 此处运算为应用懒惰标记
+            d[p * 2 + 1] += b[p] * (t - m); // 合并运算符的高阶运算 此处运算为应用懒惰标记
             b[p * 2] += b[p];               // 下传标记，无需修改
             b[p * 2 + 1] += b[p];           // 下传标记，无需修改
             b[p] = 0;
@@ -154,7 +155,7 @@ public:
         b.resize(4 * n + 5);
     }
 
-    void build(TYPE_NAME _a)
+    void build(vector<TYPE_NAME> _a)
     {
         a = _a;
         subbuild(1, n, 1);
@@ -162,17 +163,18 @@ public:
 
     TYPE_NAME getsum(int l, int r)
     {
-        return subGetSum(l,r,1,n,1);
+        return subGetSum(l, r, 1, n, 1);
     }
 
-    void update(int l,int r,TYPE_NAME c)//修改区间
+    void update(int l, int r, TYPE_NAME c) // 修改区间
     {
-        subUpdate(l,r,c,1,n,1);
+        subUpdate(l, r, c, 1, n, 1);
     }
 
-    void update(int idx,TYPE_NAME tar){//修改单点
-        TYPE_NAME tmp = getsum(idx,idx);
+    void update(int idx, TYPE_NAME tar)
+    { // 修改单点，未测试
+        TYPE_NAME tmp = getsum(idx, idx);
         tar -= tmp;
-        subUpdate(idx,idx,tar,1,n,1);
+        subUpdate(idx, idx, tar, 1, n, 1);
     }
 };
