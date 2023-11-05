@@ -46,7 +46,7 @@ private:
     }
 
 public:
-    segtree(int _n)
+    segTree(int _n)
     {
         n = _n;
         d.resize(4 * n + 5);
@@ -146,7 +146,7 @@ private:
     }
 
 public:
-    segtree(TYPE_NAME _n)
+    lazyTree(TYPE_NAME _n)
     {
         n = _n;
         d.resize(4 * n + 5);

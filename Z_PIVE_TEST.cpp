@@ -6,5 +6,7 @@
 
 int main()
 {
-    
+    int n;
+    cin >> n;
+    segTree<int> sgt(n);
 }
