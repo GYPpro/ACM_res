@@ -11,7 +11,7 @@ int subsearch_1(TYPE_NAME tar, vector<TYPE_NAME> &arr) // 第一类二分："非
     int ans = -1;
     while (r >= l)
     {
-        int m = l + (r - l) >> 1;
+        int m =( l + (r - l) >> 1);
         if (arr[m] >= tar)
         {
             if (arr[m] == tar)
@@ -32,7 +32,7 @@ int subsearch_2(TYPE_NAME tar, vector<TYPE_NAME> &arr) // 第二类二分：取�
     int m = 0;
     while (r > l + 1)
     {
-        int m = l + (r - l) >> 1;
+        int m =( l + (r - l) >> 1);
         if (arr[m] > tar)
             r = m;
         else
@@ -73,7 +73,7 @@ int subsearch_3(TYPE_NAME tar, vector<TYPE_NAME> &arr) // 第三类二分：取�
     int m = 0;
     while (r > l)
     {
-        int m = l + (r - l) >> 1;
+        int m = (l + (r - l) >> 1);
         if (arr[m] > tar)
             r = m;
         else
