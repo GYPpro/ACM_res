@@ -1,5 +1,5 @@
 {
-    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.errorSquiggles": "disabled",
     "editor.fontFamily": "consolas, 'Courier New', monospace",
     "editor.minimap.maxColumn": 150,
     "files.associations": {

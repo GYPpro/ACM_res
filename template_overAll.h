@@ -11,6 +11,7 @@
 using namespace std;
 
 #define ll long long
+#define pb push_back
 #define ld long double
 const ll int maxn = 1E5+10;
 const ll int mod1 = 998244353;
