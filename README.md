@@ -11,6 +11,7 @@
 - ds:数据结构
   - dsu.h 并查集
   - linkedList.h 模拟链表
+  - profixSum.h 前缀和数组
   - segTree.h 线段树
   - stack 栈
 - graph:图论
