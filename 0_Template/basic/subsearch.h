@@ -64,6 +64,21 @@ public:
     }
 };
 
+int getAns(auto check())
+{
+    int l = minLim,
+                r = maxLim + 1;
+    while (l + 1 < r)
+    {                          // 如果两点不相邻
+        int mid = (l + r) / 2; // 取中间值
+        if (check(mid))        // 如果可行
+            l = mid;           // 升高锯片高度
+        else
+            r = mid; // 否则降低锯片高度
+    }
+    return l; // 返回左边值
+}
+
 // FIXME:二分tm死了
 template <class TYPE_NAME>
 int subsearch_3(TYPE_NAME tar, vector<TYPE_NAME> &arr) // 第三类二分：取大于或等于tar的最小的元素

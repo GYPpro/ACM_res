@@ -36,7 +36,8 @@ fno: root的父亲节点
 void init(){
 deep[0] = 0;
 for (ll i = 0; i < 31; i++)
-    fa[0].push_back(0);}
+    fa[0].push_back(0);
+}
 // 记录每个节点的祖先和深度
 void dfs(vector<vector<ll>> &g, vector<vector<ll>> &fa, vector<ll> &deep, ll fno, ll root) // root为当前结点，fno为root的父节点
 {
@@ -55,6 +56,51 @@ void dfs(vector<vector<ll>> &g, vector<vector<ll>> &fa, vector<ll> &deep, ll fno
     }
     return;
 }
+
+// fa:lca倍增值 deep:深度 tr:树
+auto dfs = [&](int fno,int root) -> void{
+    fa[root].push_back(fno);
+    deep[root] = deep[fa[root][0]] + 1;
+    for (ll i = 1; i < 31; i++)
+    {
+        fa[root].push_back(fa[fa[root][i - 1]][i - 1]);
+    }
+    ll sz = tr[root].size();
+    for (ll i = 0; i < sz; i++) // 遍历子节点
+    {
+        if (tr[root][i] == fno)
+            continue;
+        dfs(root, tr[root][i]);
+    }
+    return;
+};
+
+auto lca = [&](int u,int v) -> int{
+    if (deep[u] > deep[v])
+    {
+        ll swap = u;
+        u = v;
+        v = swap;
+    }
+    ll tmp = deep[v] - deep[u];
+    for (ll j = 0; tmp; j++, tmp >>= 1)
+    {
+        if (tmp & 1)
+            v = fa[v][j];
+    }
+    if (u == v)
+        return v;
+    for (ll j = 30; j >= 0 && v != u; j--)
+    {
+        if (fa[u][j] != fa[v][j])
+        {
+            u = fa[u][j];
+            v = fa[v][j];
+        }
+    }
+    return fa[u][0]; // 返回最近公共祖先
+};
+
 // 寻找u和v的最近公共祖先
 ll lca_b(vector<vector<ll>> &fa, vector<ll> &deep, ll u, ll v)
 {
