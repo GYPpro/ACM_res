@@ -75,3 +75,5 @@
 先将序列基于$a_i$排序。
 
 枚举从$1-n$的每个$p_i$，利用一个`set`维护所有满足$a_i <= p_i$的右端点，并在线地用`set.begin`填充答案序列。
+
+例题：#link("https://codeforces.com/problemset/problem/1701/D")
