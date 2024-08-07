@@ -1,6 +1,4 @@
-#include <template_overAll.h>
 
-//AC
 template <class T>
 T mypow(T n, int k, T r = 1)
 {
@@ -50,31 +48,31 @@ struct mInt
     mInt &operator%=(const int &i) { return x %= i, *this; }
     friend mInt operator*(const mInt &i, const mInt &j)
     {
-        Zmod res = i;
+        mInt res = i;
         res *= j;
         return res;
     }
     friend mInt operator+(const mInt &i, const mInt &j)
     {
-        Zmod res = i;
+        mInt res = i;
         res += j;
         return res;
     }
     friend mInt operator-(const mInt &i, const mInt &j)
     {
-        Zmod res = i;
+        mInt res = i;
         res -= j;
         return res;
     }
     friend mInt operator/(const mInt &i, const mInt &j)
     {
-        Zmod res = i;
+        mInt res = i;
         res /= j;
         return res;
     }
     friend mInt operator%(const mInt &i, const int &j)
     {
-        Zmod res = i;
+        mInt res = i;
         res %= j;
         return res;
     }
@@ -82,7 +80,7 @@ struct mInt
     {
         int v;
         it >> v;
-        j = Zmod(v);
+        j = mInt(v);
         return it;
     }
     friend auto &operator<<(ostream &o, const mInt &j) { return o << j.x; }
@@ -93,3 +91,4 @@ struct mInt
 };
 #define int long long
 // using Z = Zmod<998244353>;
+

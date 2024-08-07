@@ -2,9 +2,9 @@
 #include <template_overAll.h>
 #endif
 
-vector<ll int> init(ll int n)
+vector<int> init(int n)
 {
-    vector<ll int> pri;
+    vector<int> pri;
     vector<bool> vis(n, 0);
     for (int i = 2; i <= n; i++)
     {
