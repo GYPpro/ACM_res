@@ -5,7 +5,7 @@
 vector<int> init(int n)
 {
     vector<int> pri;
-    vector<bool> vis(n, 0);
+    vector<bool> vis(n, 0); 
     for (int i = 2; i <= n; i++)
     {
         if (!vis[i])
