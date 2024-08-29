@@ -1,12 +1,11 @@
 
-// AC
-class sefx_2{
-protected:
+class prfx_2{
+public:
     vector<vector<int>> mtx;
     int n,m;
     public:
-    sefx_2(vector<vector<int>> _mtx){init(_mtx);};
-    sefx_2() { };
+    prfx_2(vector<vector<int>> _mtx){init(_mtx);};
+    prfx_2() { };
     void init(vector<vector<int>> _mtx)
     {
         n = _mtx.size();
@@ -44,18 +43,29 @@ class conj_diff_2{
     vector<vector<int>> prf;
     int n,m;
     public:
-    conj_diff_2(vector<vector<int>> _mtx){
+
+    conj_diff_2(int _n,int _m)
+    {
+        n = _n+1,m = _m+1;
+        vector<vector<int>> initmp(n,vector<int> (m,0));
+        init(initmp);
+    }
+
+    conj_diff_2(vector<vector<int>> _mtx)
+    {
         this->init(_mtx);
     }
+
     conj_diff_2(){ }
+
     void init(vector<vector<int>> _mtx)
     {
         n = _mtx.size();
         m = _mtx[0].size();
-        mtx.resize(n+5);
-        for(auto &x:mtx) x.resize(m+5);
-        prf.resize(n+5);
-        for(auto &x:prf) x.resize(m+5);
+        mtx.resize(n+2);
+        for(auto &x:mtx) x.resize(m+2);
+        prf.resize(n+2);
+        for(auto &x:prf) x.resize(m+2);
         lop(i,1,n+1)
             lop(j,1,m+1)
                 prf[i][j] = _mtx[i-1][j-1];
@@ -76,7 +86,7 @@ class conj_diff_2{
 
     vector<vector<int>> cacu()
     {
-        auto res = sefx_2(mtx);
+        auto res = prfx_2(mtx);
         vector<vector<int>> rst(n,vector<int>(m));
         lop(i,1,n+1)
             lop(j,1,m+1)
