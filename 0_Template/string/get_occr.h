@@ -12,7 +12,7 @@ private:
     string s;
 public:
     get_occr(string _s) { s = _s; }
-    vector<int> locate(vector<string> _s,bool dira)
+    vector<int> locate(vector<string> _s,bool dira = 1)
     {
         int n = _s.size();
         vector<int> occr(n,-1);
