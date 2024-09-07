@@ -1,4 +1,4 @@
-
+// ##IGNORE##
 template <class T>
 T mypow(T n, int k, T r = 1)
 {

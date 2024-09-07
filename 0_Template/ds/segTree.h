@@ -1,69 +1,3 @@
-#include <template_overAll.h>
-
-// HACK:线段树
-template <class TYPE_NAME>
-class segTree
-{
-    /*
-     *  TYPE_NAME需要支持：+ 或自定义的合并运算符
-     *  没有实现懒惰标记，不提供初始化结束后的修改
-     *  不提供在线
-     *  不提供持久化
-     */
-private:
-    vector<TYPE_NAME> d;
-    vector<TYPE_NAME> a;
-    int n;
-    const TYPE_NAME INI = 0; // 不会影响合并运算的初始值，如max取INF，min取0，mti取1
-
-    void subbuild(int s, int t, int p)
-    {
-        if (s == t)
-        {
-            d[p] = a[s];
-            return;
-        }
-        int m = s + ((t - s) >> 1);
-        subbuild(s, m, p * 2);
-        subbuild(m + 1, t, p * 2 + 1);
-        d[p] = d[p * 2] + d[(p * 2) + 1];
-        //    合并运算符 ↑
-    }
-
-    TYPE_NAME subGetSum(int l, int r, int s, int t, int p)
-    {
-        if (l <= s && t <= r)
-            return d[p];
-        int m = s + ((t - s) >> 1);
-        TYPE_NAME ansl = INI;
-        TYPE_NAME ansr = INI;
-        if (l <= m)
-            ansl = getsum(l, r, s, m, p * 2);
-        if (r < m)
-            ansr = getsum(l, r, m + 1, t, p * 2 + 1);
-        return ansl + ansr;
-        // 合并运算符↑
-    }
-
-public:
-    segTree(int _n)
-    {
-        n = _n;
-        d.resize(4 * n + 5);
-        a.resize(4 * n + 5);
-    }
-
-    void build(vector<TYPE_NAME> _a)
-    {
-        a = _a;
-        subbuild(1, n, 1);
-    }
-
-    TYPE_NAME getsum(int l, int r)
-    {
-        return subGetSum(l, r, 1, n, 1);
-    }
-};
 
 // AC 带懒惰标记线段树 
 template <class TYPE_NAME>
@@ -293,7 +227,7 @@ struct Info
 {
     int mn {inf}, mnId, mx {-inf}, mxId;
 } ;
-Info operator+(Info a, Info b)
+Info operator+(Info a, Info b)  
 {
     if (a.mn > b.mn)
         a.mn = b.mn, a.mnId = b.mnId;

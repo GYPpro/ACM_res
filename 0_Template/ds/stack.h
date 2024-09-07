@@ -1,6 +1,4 @@
-#include <template_overAll.h>
-
-
+// ##IGNORE##
 template <class TYPE_NAME>
 class stackElememt{
 public:

@@ -31,17 +31,6 @@ public:
         p = ConvexHull(_A);
     }
 
-    VALUE_TYPE getPerimeter() {
-        VALUE_TYPE sum = 0;
-        p.pb(p[0]);
-        for(int i = 0;i < (int)p.size() - 1;i ++)
-        {
-            sum += sqrtl(dis(p[i],p[i+1]));
-        }
-        p.pop_back();
-        return sum;
-    }
-
     static vec_pv ConvexHull(vec_pv A, VALUE_TYPE flag = 1)
     {
         int n = A.size();
@@ -80,6 +69,17 @@ public:
         }
         p.pop_back();
         return ans;
+    }
+
+    VALUE_TYPE getPerimeter() {
+        VALUE_TYPE sum = 0;
+        p.pb(p[0]);
+        for(int i = 0;i < (int)p.size() - 1;i ++)
+        {
+            sum += sqrtl(dis(p[i],p[i+1]));
+        }
+        p.pop_back();
+        return sum;
     }
 
 };

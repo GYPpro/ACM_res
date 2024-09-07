@@ -1,5 +1,4 @@
-#include <template_overAll.h>
-
+// ##IGNORE##
 template<class TYPE_NAME>
 class profixSum //HACK
 {// 下标从0、1开始均可

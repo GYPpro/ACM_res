@@ -1,7 +1,5 @@
-#include <template_overAll.h>
-#ifndef INF
-#define INF 0x3f3f3f3f
-#endif
+
+const int INF = 0x3f3f3f3f
 
 class PD//AC
 {
@@ -161,19 +159,3 @@ public:
         cout << maxf << " " << minc << "\n";
     }
 };
-
-// void solve()
-// {
-//     int n, m, s, t;
-//     cin >> n >> m >> s >> t;
-//     PD pd = PD(n,m,s,t);
-//     for (int i = 1; i <= m; i++)
-//     {
-//         int u, v, f, c;
-//         cin >> u >> v >> f >> c;
-//         pd.addedge(u, v, f, c);
-//     }
-//     pd.pd();
-//     pd.printAns();
-//     return;
-// }

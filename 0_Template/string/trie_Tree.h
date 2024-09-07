@@ -1,6 +1,5 @@
 #include <template_overAll.h>
 
-
 class Trie//AC
 {
 public:

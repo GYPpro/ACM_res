@@ -1,6 +1,3 @@
-#include <template_overAll.h>
-#include <unordered_map>
-
 
 class DSU {
     std::vector<int> f, siz;
@@ -12,7 +9,6 @@ public:
     
     void init(int n) {
         f.resize(n);
-        // std::iota(f.begin(), f.end(), 0);
         for(int i = 0;i < n;i ++) f[i] = i;
         siz.assign(n, 1);
     }

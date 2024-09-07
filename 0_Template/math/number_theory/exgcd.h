@@ -1,5 +1,5 @@
 #include <template_overAll.h>
-
+// ##IGNORE##
 
 //TODO:扩展欧几里得
 template <class TYPE_NAME>

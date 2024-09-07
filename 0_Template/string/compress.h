@@ -1,7 +1,4 @@
-#include <template_overAll.h>
-
-#include <basic\mInt.h>
-
+// ##IGNORE##
 const int N = 1 << 21;
 static const int mod1 = 1E9 + 7, base1 = 127;
 static const int mod2 = 1E9 + 9, base2 = 131;

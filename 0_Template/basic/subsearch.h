@@ -1,7 +1,4 @@
-#ifndef _IN_TEMPLATE_
-#include <template_overAll.h>
-#endif
-
+// ##IGNORE##
 // ac
 template <class TYPE_NAME>
 int subsearch_1(TYPE_NAME tar, vector<TYPE_NAME> &arr) // 第一类二分："非下降"序列，"找到"就返回元素下标，相等元素返回最"左侧"下标，否则返回-1
