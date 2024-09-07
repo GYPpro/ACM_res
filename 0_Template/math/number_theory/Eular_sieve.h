@@ -1,6 +1,4 @@
-#ifndef _IN_TEMPLATE_
-#include <template_overAll.h>
-#endif
+
 
 vector<int> init(int n)
 {

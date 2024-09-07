@@ -8,7 +8,12 @@
         "*.tcc": "cpp",
         "deque": "cpp",
         "string": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "random": "cpp",
+        "numeric": "cpp",
+        "tuple": "cpp",
+        "cmath": "cpp",
+        "complex": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only"
 }

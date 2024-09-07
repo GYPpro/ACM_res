@@ -4,18 +4,18 @@ template<typename VALUE_TYPE>
 class Rotating_Calipers
 {
 public:
+    using pv = pair<VALUE_TYPE, VALUE_TYPE>;
     using vec_pv = vector<pair<VALUE_TYPE, VALUE_TYPE>>;
     vec_pv p;
 
-    static VALUE_TYPE cross(pair<VALUE_TYPE, VALUE_TYPE> p1, pair<VALUE_TYPE, VALUE_TYPE> p2, pair<VALUE_TYPE, VALUE_TYPE> p0)
+    static VALUE_TYPE cross(pv p1, pv p2, pv p0)
     {
-        pair<VALUE_TYPE, VALUE_TYPE>
-            t1 = {p1.fi - p0.fi, p1.se - p0.se},
-            t2 = {p2.fi - p0.fi, p2.se - p0.se};
+        pv t1 = {p1.fi - p0.fi, p1.se - p0.se},
+           t2 = {p2.fi - p0.fi, p2.se - p0.se};
         return t1.fi * t2.se - t1.se * t2.fi;
     }
 
-    static VALUE_TYPE dis(const pair<VALUE_TYPE, VALUE_TYPE> &p1,const pair<VALUE_TYPE, VALUE_TYPE> &p2){
+    static VALUE_TYPE dis(const pv &p1,const pv &p2){
         return (p1.fi - p2.fi) * (p1.fi - p2.fi) + (p1.se - p2.se) * (p1.se - p2.se);
     };
 
@@ -37,7 +37,7 @@ public:
         if (n <= 2) return A; 
         vec_pv ans(n * 2);
         sort(A.begin(), A.end(),
-        [](pair<VALUE_TYPE,VALUE_TYPE> a,pair<VALUE_TYPE,VALUE_TYPE> b) -> bool {
+        [](pv a,pv b) -> bool {
             if(fabs(a.fi - b.fi) < 1e-10)
                 return a.se < b.se;
             else return a.fi < b.fi;}    );

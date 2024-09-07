@@ -1,4 +1,3 @@
-#include <template_overAll.h>
 
 const int N = 1e6;
 const int mod = 1e9+7;

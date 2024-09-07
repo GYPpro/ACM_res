@@ -10,10 +10,7 @@ public:
         int v, f, c, next;
         edge(int _v,int _f,int _c,int _next)
         {
-            v = _v;
-            f = _f;
-            c = _c;
-            next = _next;
+            v = _v,f = _f,c = _c,next = _next;
         }
         edge() { }
     } ;
@@ -44,28 +41,18 @@ public:
         }
     };
 
-    vector<int> head;
-    vector<int> dis;
-    vector<int> vis;
-    vector<int> h;
+    vector<int> head,dis,vis,h;
     vector<edge> e;
     vector<node> p;
     int n, m, s, t, cnt = 1, maxf, minc;
 
     PD(int _n,int _m,int _s,int _t)
     {
-        n = _n;
-        m = _m;
-        s = _s;
-        t = _t;
-        maxf = 0;
-        minc = 0;
-        head.resize(n+2);
-        dis.resize(n+2);
-        vis.resize(n+2);
+        n = _n, m = _m,s = _s,t = _t;
+        maxf = 0, minc = 0;
+        head.resize(n+2), dis.resize(n+2),vis.resize(n+2);
         e.resize(2);
-        h.resize(n+2);
-        p.resize(m+2);
+        h.resize(n+2), p.resize(m+2);
     }
 
     void addedge(int u, int v, int f, int c)
@@ -154,8 +141,8 @@ public:
         return 0;
     }
 
-    void printAns()
+    pair<int,int> get()
     {
-        cout << maxf << " " << minc << "\n";
+        return {maxf,minc};
     }
 };

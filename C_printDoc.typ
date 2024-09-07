@@ -77,7 +77,8 @@
   numbering: "1/1"
 )
 
-= basic
+= #smallcaps[Basic]
+
 == `pbds.h`
 
 
@@ -94,7 +95,120 @@ tree_order_statistics_node_update>;
 //order_of_key
 ```]
  #pagebreak() 
-= ds
+= #smallcaps[Ds]
+
+== `bst.h`
+
+
+ #sourcecode[```cpp
+
+const int N=1e5+100;
+struct node{
+	int s[2];
+	int v,p,cnt,sz;
+	void init(int p1,int v1){
+		p=p1;v=v1;
+		cnt=sz=1;
+	}
+}tr[N];
+int root=0,idx=0;
+void pushup(int x){
+	tr[x].sz=tr[x].cnt+tr[tr[x].s[1]].sz+tr[tr[x].s[0]].sz;
+}
+void rotate(int x){
+	int y=tr[x].p;
+	int z=tr[y].p;
+	int k=tr[y].s[1]==x;
+	tr[y].s[k]=tr[x].s[k^1];
+	tr[tr[x].s[k^1]].p=y;
+	tr[z].s[tr[z].s[1]==y]=x;
+	tr[x].p=z;
+	tr[y].p=x;
+	tr[x].s[k^1]=y;
+	pushup(y);pushup(x);
+}
+void splay(int x,int k){s
+	while(tr[x].p!=k){
+		int y=tr[x].p;
+		int z=tr[y].p;
+		if(z!=k) (tr[y].s[0]==x)^(tr[z].s[0]==y) ? rotate(x) : rotate(y);
+		rotate(x);
+	}
+	if(k==0) root=x;
+}
+void find(int v){
+	int x=root;
+	while(tr[x].v!=v && tr[x].s[v>tr[x].v] ) x=tr[x].s[v>tr[x].v];
+	splay(x,0);
+}
+int get_pre(int v){
+	find(v);
+	int x=root;
+	if(tr[x].v<v) return x;
+	x=tr[x].s[0];
+	while(tr[x].s[1]) x=tr[x].s[1];
+	splay(x,0);
+	return x;
+}
+int get_suc(int v){
+	find(v);
+	int x=root;
+	if(tr[x].v>v) return x;
+	x=tr[x].s[1];
+	while(tr[x].s[0]) x=tr[x].s[0];
+	splay(x,0);
+	return x;
+}
+void del(int v){
+	int pre=get_pre(v);
+	int suc=get_suc(v);
+	splay(pre,0);splay(suc,pre);
+	int d=tr[suc].s[0];
+	if(tr[d].cnt>1){
+		tr[d].cnt--;splay(d,0);
+	}
+	else{
+		tr[suc].s[0]=0;splay(suc,0);
+	}
+}
+void insert(int v){
+	int x=root;
+	int p=0;
+	while(x && tr[x].v!=v){
+		p=x;x=tr[x].s[v>tr[x].v];
+	}
+	if(x) tr[x].cnt++;
+	else{
+		x=++idx;
+		tr[p].s[v>tr[p].v]=x;
+		tr[x].init(p,v);
+	}
+	splay(x,0);
+}
+int get_rank(int v){
+	insert(v);
+	int res=tr[tr[root].s[0]].sz;
+	del(v);
+	return res;
+}
+int get_val(int k){
+	int x=root;
+	while(1){
+		int y=tr[x].s[0];
+		if(tr[x].cnt+tr[y].sz<k){
+			k-=tr[y].sz+tr[x].cnt;
+			x=tr[x].s[1];
+		}
+		else{
+			if(tr[y].sz>=k) x=tr[x].s[0];
+			else break;
+		}
+	}
+	splay(x,0);
+	return tr[x].v;
+}
+```]
+ #pagebreak() 
 == `dsu.h`
 
 
@@ -144,7 +258,7 @@ public:
 
 ```]
  #pagebreak() 
-== `segTree.h`
+== `segTree_add.h`
 
 
  #sourcecode[```cpp
@@ -263,6 +377,13 @@ public:
     }
 };
   
+```]
+ #pagebreak() 
+== `segTree_MX_MI.h`
+
+
+ #sourcecode[```cpp
+
 //AC MJ的MIN/MAX树
 template<class Info>
 struct SegmentTree {
@@ -498,7 +619,8 @@ class conj_diff_2{
 
 ```]
  #pagebreak() 
-= geo
+= #smallcaps[Geo]
+
 == `Rotating_Calipers.h`
 
 
@@ -509,18 +631,18 @@ template<typename VALUE_TYPE>
 class Rotating_Calipers
 {
 public:
+    using pv = pair<VALUE_TYPE, VALUE_TYPE>;
     using vec_pv = vector<pair<VALUE_TYPE, VALUE_TYPE>>;
     vec_pv p;
 
-    static VALUE_TYPE cross(pair<VALUE_TYPE, VALUE_TYPE> p1, pair<VALUE_TYPE, VALUE_TYPE> p2, pair<VALUE_TYPE, VALUE_TYPE> p0)
+    static VALUE_TYPE cross(pv p1, pv p2, pv p0)
     {
-        pair<VALUE_TYPE, VALUE_TYPE>
-            t1 = {p1.fi - p0.fi, p1.se - p0.se},
-            t2 = {p2.fi - p0.fi, p2.se - p0.se};
+        pv t1 = {p1.fi - p0.fi, p1.se - p0.se},
+           t2 = {p2.fi - p0.fi, p2.se - p0.se};
         return t1.fi * t2.se - t1.se * t2.fi;
     }
 
-    static VALUE_TYPE dis(const pair<VALUE_TYPE, VALUE_TYPE> &p1,const pair<VALUE_TYPE, VALUE_TYPE> &p2){
+    static VALUE_TYPE dis(const pv &p1,const pv &p2){
         return (p1.fi - p2.fi) * (p1.fi - p2.fi) + (p1.se - p2.se) * (p1.se - p2.se);
     };
 
@@ -542,7 +664,7 @@ public:
         if (n <= 2) return A; 
         vec_pv ans(n * 2);
         sort(A.begin(), A.end(),
-        [](pair<VALUE_TYPE,VALUE_TYPE> a,pair<VALUE_TYPE,VALUE_TYPE> b) -> bool {
+        [](pv a,pv b) -> bool {
             if(fabs(a.fi - b.fi) < 1e-10)
                 return a.se < b.se;
             else return a.fi < b.fi;}    );
@@ -592,9 +714,11 @@ public:
 
 ```]
  #pagebreak() 
-= graph
-== Flow
-=== `max_Flow.h`
+= #smallcaps[Graph]
+
+== #smallcaps[Flow]
+
+=== `max_Flow_print.h`
 
 
  #sourcecode[```cpp
@@ -605,30 +729,19 @@ private:
     class edge
     {
     public:
-        ll int nxt,                   // 出度
-              cap,                   // 容量
-              flow;                  // 流量
-        pair<int, int> revNodeIdx; // 反向边
+        ll int nxt, cap, flow;                  
+        pair<int, int> revNodeIdx; 
     public:
         edge(int _nxt, int _cap)
         {
-            nxt = _nxt;
-            cap = _cap;
-            flow = 0;
+            nxt = _nxt,cap = _cap,flow = 0;
         }
-        void setRevIdx(int _i, int _j)
-        {
-            revNodeIdx.first = _i;
-            revNodeIdx.second = _j;
-        }
+        void setRevIdx(int _i, int _j) {  revNodeIdx = {_i,_j}; }
     };
-    vector<vector<edge>> edgeList; // 节点列表
-    vector<int> dep;               // 深度
-    vector<int> fir;               // 节点最近合法边
+    vector<vector<edge>> edgeList; 
+    vector<int> dep,fir;
     ll int maxFlowAns;
-
     int T, S;
-
 public:
     maxFlow(int _n)
     {
@@ -639,27 +752,20 @@ public:
         dep.resize(_n + 1);
         fir.resize(_n+1);
     }
-
-    void resetTS(int _T, int _S)
-    {
-        T = _T;
-        S = _S;
-    }
+    void resetTS(int _T, int _S) { T = _T,S = _S; }
 
     void addedge(int _u, int _v, int _w)
     {
         edgeList[_u].push_back(edge(_v, _w));
-        edgeList[_v].push_back(edge(_u, 0)); // 反向建边
+        edgeList[_v].push_back(edge(_u, 0)); 
         edgeList[_u][edgeList[_u].size() - 1].setRevIdx(_v, edgeList[_v].size() - 1);
         edgeList[_v][edgeList[_v].size() - 1].setRevIdx(_u, edgeList[_u].size() - 1);
     }
 
-    bool bfs() // 统计深度
+    bool bfs()
     {
         queue<int> que;
-        for (auto x = dep.begin(); x != dep.end(); x++)
-            (*x) = 0;
-
+        for (auto x = dep.begin(); x != dep.end(); x++) (*x) = 0; 
         dep[S] = 1;
         que.push(S);
         while (que.size())
@@ -686,15 +792,15 @@ public:
         ll int ret = 0;  // 本节点最大流
         for (int &i = fir[at]; i < edgeList[at].size(); i++)
         {
-            auto tar = edgeList[at][i];      // 目前遍历的边
-            int tlFlow = 0;                  // 目前边的最大流
+            auto tar = edgeList[at][i];   // 目前遍历的边
+            int tlFlow = 0;   // 目前边的最大流
             if (dep[at] == dep[tar.nxt] - 1) // 遍历到的边为合法边
             {
                 tlFlow = dfs(tar.nxt, min((ll)tar.cap - tar.flow, flow - ret));
                 if (!tlFlow)
-                    continue;                                                         // 若最大流为0，什么都不做
-                ret += tlFlow;                                                        // 本节点最大流累加
-                edgeList[at][i].flow += tlFlow;                                       // 本节点实时流量
+                    continue;   // 若最大流为0，什么都不做
+                ret += tlFlow;   // 本节点最大流累加
+                edgeList[at][i].flow += tlFlow;  // 本节点实时流量
                 edgeList[tar.revNodeIdx.first][tar.revNodeIdx.second].flow -= tlFlow; // 反向边流量
                 if (ret == flow)
                     return ret; // 充满了就不继续扫了
@@ -734,10 +840,7 @@ public:
         int v, f, c, next;
         edge(int _v,int _f,int _c,int _next)
         {
-            v = _v;
-            f = _f;
-            c = _c;
-            next = _next;
+            v = _v,f = _f,c = _c,next = _next;
         }
         edge() { }
     } ;
@@ -768,28 +871,18 @@ public:
         }
     };
 
-    vector<int> head;
-    vector<int> dis;
-    vector<int> vis;
-    vector<int> h;
+    vector<int> head,dis,vis,h;
     vector<edge> e;
     vector<node> p;
     int n, m, s, t, cnt = 1, maxf, minc;
 
     PD(int _n,int _m,int _s,int _t)
     {
-        n = _n;
-        m = _m;
-        s = _s;
-        t = _t;
-        maxf = 0;
-        minc = 0;
-        head.resize(n+2);
-        dis.resize(n+2);
-        vis.resize(n+2);
+        n = _n, m = _m,s = _s,t = _t;
+        maxf = 0, minc = 0;
+        head.resize(n+2), dis.resize(n+2),vis.resize(n+2);
         e.resize(2);
-        h.resize(n+2);
-        p.resize(m+2);
+        h.resize(n+2), p.resize(m+2);
     }
 
     void addedge(int u, int v, int f, int c)
@@ -878,15 +971,16 @@ public:
         return 0;
     }
 
-    void printAns()
+    pair<int,int> get()
     {
-        cout << maxf << " " << minc << "\n";
+        return {maxf,minc};
     }
 };
 
 ```]
  #pagebreak() 
-== Tree
+== #smallcaps[Tree]
+
 === `lca.h`
 
 
@@ -935,13 +1029,61 @@ public:
 
 ```]
  #pagebreak() 
-= math
-== number_theory
+= #smallcaps[Math]
+
+== #smallcaps[Number_theory]
+
+=== `basic.h`
+
+
+ #sourcecode[```cpp
+__builtin_ffsll(x)
+// 返回 x 的二进制末尾最后一个 1 的位置
+
+__builtin_clzll(x)
+// 返回 x 的二进制的前导 0 的个数。
+
+__builtin_ctzll(x)
+// 返回 x 的二进制末尾连续 0 的个数。
+
+__builtin_clrsbll(x)
+// 当 x 的符号位为 0 时返回 x 的二进制的前导 0 的个数减一，否则返回 x 的二进制的前导 1 的个数减一。
+
+__builtin_popcountll(x)
+// 返回 x 的二进制中 1 的个数。
+
+__builtin_parity(x)
+// 判断 x 的二进制中 1 的个数的奇偶性。
+
+int binpow(int x, int y)
+{
+    int res = 1;
+    while (y > 0)
+    {
+        if (y & 1)
+            res = res * x % mod;
+        x = x * x % mod;
+        y >>= 1;
+    }
+    return res;
+}
+
+void exgcd(int a, int b, int& x, int& y) {
+  if (b == 0) {
+    x = 1, y = 0;
+    return;
+  }
+  exgcd(b, a % b, y, x);
+  y -= a / b * x;
+}
+
+binpow(x,mod-2)
+```]
+ #pagebreak() 
 === `Comb.h`
 
 
  #sourcecode[```cpp
-#include <template_overAll.h>
 
 const int N = 1e6;
 const int mod = 1e9+7;
@@ -977,13 +1119,77 @@ auto C = [&](int x, int y) -> int
 };
 ```]
  #pagebreak() 
+=== `CRT.h`
+
+
+ #sourcecode[```cpp
+
+int CRT(vector<int> &r, vector<int> &a)
+{ // % r === a
+    int n = a.size();
+    __int128 k = 1, ans = 0;
+    for (int i = 0; i < n; i++) k *= r[i];
+    for (int i = 0; i < n; i++)
+    {
+        __int128 m = k / r[i];
+        int b, y;
+        exgcd(m, r[i], b, y); // b * m mod r[i] = 1
+        ans = (ans + a[i] * m * b % k) % k;
+    }
+    return (ans % k + k) % k;
+}
+
+
+
+int mul(int a, int b, int m) {
+    return (__int128)a * b % m;
+}
+
+int exgcd (int a,int b,int &x,int &y) {
+    if (b == 0) { x = 1, y = 0; return a; }
+    int g = exgcd(b, a % b, x, y), tp = x;
+    x = y, y = tp - a / b * y;
+    return g;
+};
+
+int EXCRT(vector<int> &a,vector<int> &r) { // % r == a 
+    int x, y, k;
+    int n = r.size();
+    int M = a[0], ans = r[0];
+    for (int i = 1; i < n; ++ i) {
+        int ca = M, cb = a[i], cc = (r[i] - ans % cb + cb) % cb;
+        int gcd = exgcd(ca, cb, x, y), bg = cb / gcd;
+        if (cc % gcd != 0) return -1;
+        x = mul(x, cc / gcd, bg);
+        ans += x * M;
+        M *= bg;
+        ans = (ans % M + M) % M;
+    }
+    return (ans % M + M) % M;
+}
+```]
+ #pagebreak() 
+=== `Eular_phi.h`
+
+
+ #sourcecode[```cpp
+int euler_phi(int n) {
+  int ans = n;
+  for (int i = 2; i * i <= n; i++)
+    if (n % i == 0) {
+      ans = ans / i * (i - 1);
+      while (n % i == 0) n /= i;
+    }
+  if (n > 1) ans = ans / n * (n - 1);
+  return ans;
+}
+```]
+ #pagebreak() 
 === `Eular_sieve.h`
 
 
  #sourcecode[```cpp
-#ifndef _IN_TEMPLATE_
-#include <template_overAll.h>
-#endif
+
 
 vector<int> init(int n)
 {
@@ -1011,7 +1217,7 @@ vector<int> init(int n)
 
 
  #sourcecode[```cpp
-#include <template_overAll.h>
+
 #define int long long
 #define pii pair<int, int>
 const int INF = 1145141919810LL;
@@ -1189,7 +1395,8 @@ public:
  
 ```]
  #pagebreak() 
-== other
+== #smallcaps[Other]
+
 === `Frac.h`
 
 
@@ -1279,7 +1486,8 @@ struct Frac {
 using F = Frac<int>;
 ```]
  #pagebreak() 
-= string
+= #smallcaps[String]
+
 == `compress_print.h`
 
 
