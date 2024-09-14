@@ -13,7 +13,8 @@
         "numeric": "cpp",
         "tuple": "cpp",
         "cmath": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "functional": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only"
 }

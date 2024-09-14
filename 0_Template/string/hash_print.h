@@ -22,7 +22,7 @@ public:
     vector<int> h2;
     string s;
 
-    hstring(string s_) : s(s_), h1{1}, h2{1}
+    hstring(string s_) : s(s_), h1{0}, h2{0}
     {
         build();
     }
@@ -44,8 +44,8 @@ public:
     puv substring(int l, int r)
     { // 输出子串的哈希值
         if (l > r) swap(l, r);
-        int ans1 = (mod + h1[r + 1] - h1[l] * val1[r - l + 1] % mod1) % mod1;
-        int ans2 = (mod + h2[r + 1] - h2[l] * val2[r - l + 1] % mod2) % mod2;
+        int ans1 = (mod1 + h1[r + 1] - h1[l] * val1[r - l + 1] % mod1) % mod1;
+        int ans2 = (mod2 + h2[r + 1] - h2[l] * val2[r - l + 1] % mod2) % mod2;
         return {ans1, ans2};
     }
 
