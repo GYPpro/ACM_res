@@ -510,6 +510,59 @@ Info operator+(Info a, Info b)
 
 ```]
  #pagebreak() 
+== `ST.h`
+
+
+ #sourcecode[```cpp
+
+class SparseTable
+{
+    using func_type = function<int(const int &, const int &)>;
+    
+    vector<vector<int>> ST;
+    int len;
+    vector<int> preLog;
+    func_type op;
+    static int default_func(const int &t1, const int &t2) { return max(t1, t2); }
+
+public:
+    void build(const vector<int> &v, func_type _func = default_func)
+    {
+        op = _func;
+        len = v.size();
+        int l1 = ceil(log2(len)) + 1;
+        ST.assign(len, vector<int>(l1, 0));
+        for (int i = 0; i < len; ++i)
+        {
+            ST[i][0] = v[i];
+        }
+        for (int j = 1; j < l1; ++j)
+        {
+            int pj = (1 << (j - 1));
+            for (int i = 0; i + pj < len; ++i)
+            {
+                ST[i][j] = op(ST[i][j - 1], ST[i + (1 << (j - 1))][j - 1]);
+            }
+        }
+        preLog.resize(len + 1);
+        lop(i, 1, len + 1) preLog[i] = floor(log2(i));
+    }
+
+    int getsum(int l, int r)
+    {
+        if (r < l)
+            return 0;
+        l = max(0, l), r = min(len - 1, r);
+        if (r == 0)
+            return 0;
+        int lt = r - l + 1;
+        int q = preLog[lt];
+        return op(ST[l][q], ST[r - (1 << q) + 1][q]);
+    }
+};
+
+```]
+ #pagebreak() 
 == `twoDimPrfxSum.h`
 
 
@@ -981,6 +1034,63 @@ public:
  #pagebreak() 
 == #smallcaps[Tree]
 
+=== `hld.h`
+
+
+ #sourcecode[```cpp
+void dfs1(int o) {
+  son[o] = -1;
+  siz[o] = 1;
+  for (int j = h[o]; j; j = nxt[j])
+    if (!dep[p[j]]) {
+      dep[p[j]] = dep[o] + 1;
+      fa[p[j]] = o;
+      dfs1(p[j]);
+      siz[o] += siz[p[j]];
+      if (son[o] == -1 || siz[p[j]] > siz[son[o]]) son[o] = p[j];
+    }
+}
+
+void dfs2(int o, int t) {
+  top[o] = t;
+  cnt++;
+  dfn[o] = cnt;
+  rnk[cnt] = o;
+  if (son[o] == -1) return;
+  dfs2(son[o], t);  // 优先对重儿子进行 DFS，可以保证同一条重链上的点 DFS 序连续
+  for (int j = h[o]; j; j = nxt[j])
+    if (p[j] != son[o] && p[j] != fa[o]) dfs2(p[j], p[j]);
+}
+
+int lca(int u, int v) {
+  while (top[u] != top[v]) {
+    if (dep[top[u]] > dep[top[v]])
+      u = fa[top[u]];
+    else
+      v = fa[top[v]];
+  }
+  return dep[u] > dep[v] ? v : u;
+} 
+
+// st 是线段树结构体
+int querymax(int x, int y) {
+  int ret = -inf, fx = top[x], fy = top[y];
+  while (fx != fy) {
+    if (dep[fx] >= dep[fy])
+      ret = max(ret, st.query1(1, 1, n, dfn[fx], dfn[x])), x = fa[fx];
+    else
+      ret = max(ret, st.query1(1, 1, n, dfn[fy], dfn[y])), y = fa[fy];
+    fx = top[x];
+    fy = top[y];
+  }
+  if (dfn[x] < dfn[y])
+    ret = max(ret, st.query1(1, 1, n, dfn[x], dfn[y]));
+  else
+    ret = max(ret, st.query1(1, 1, n, dfn[y], dfn[x]));
+  return ret;
+}
+```]
+ #pagebreak() 
 === `lca.h`
 
 
@@ -988,31 +1098,33 @@ public:
 
 class LCA{ 
 public:
-    vector<vector<int>> cnj;
+    vector<vector<pii>> cnj;
     vector<int> lg,dep;
-    vector<array<int,32>> fa;
+    vector<array<int,32>> fa,wei;
     int n;
 
     LCA(int _n) {
         n = _n;
         cnj.resize(n+1);
-        lg.resize(n+1),fa.resize(n+1),dep.resize(n+1);
+        lg.resize(n+1),fa.resize(n+1),dep.resize(n+1),wei.resize(n+1);
         for(int i = 1; i <= n; i ++)
             lg[i] = lg[i-1] + (1 << lg[i-1] == i);
     }
 
-    void addEdge(int u,int v) {
-        cnj[u].push_back(v);
-        cnj[v].push_back(u);
+    void addEdge(int u,int v,int w) {
+        cnj[u].push_back({v,w});
+        cnj[v].push_back({u,w});
     }
 
     void build(int rt = 1) {
         using itf = function<void(int,int)>;
         itf dfs = [&](int p,int f) -> void {
             fa[p][0] = f,dep[p] = dep[f] + 1;
+            // wei[p][0] = 0;
             for(int i = 1;i <= lg[dep[p]];i ++) fa[p][i] = fa[fa[p][i-1]][i-1];
-            for(auto x:cnj[p]) if(x == f) continue;
-            else dfs(x,p);
+            for(int i = 1;i <= lg[dep[p]];i ++) wei[p][i] = max(wei[p][i-1],wei[fa[p][i-1]][i-1]);
+            for(auto [x,w]:cnj[p]) if(x == f) continue;
+            else wei[x][0] = w,dfs(x,p);
         };
         dfs(rt,0);
     }
@@ -1024,6 +1136,18 @@ public:
         for(int k = lg[dep[x]]-1;k >= 0;k --) if(fa[x][k] != fa[y][k]) x = fa[x][k],y = fa[y][k];
         return fa[x][0];
     }
+
+    int getmaxw(int x,int y) {
+        int curmx = 0;
+        if(dep[x] < dep[y]) swap(x,y);
+        while(dep[x] > dep[y]) curmx = max(curmx,wei[x][lg[dep[x] - dep[y]] - 1]), x = fa[x][lg[dep[x] - dep[y]] - 1];
+        if(x == y) return curmx;
+        for(int k = lg[dep[x]]-1;k >= 0;k --) 
+            if(fa[x][k] != fa[y][k]) 
+                curmx = max(curmx,wei[x][k]),x = fa[x][k],
+                curmx = max(curmx,wei[y][k]),y = fa[y][k];
+        return max({curmx,wei[x][0],wei[y][0]});
+    } 
 };
 
 
@@ -1627,7 +1751,7 @@ public:
     vector<int> h2;
     string s;
 
-    hstring(string s_) : s(s_), h1{1}, h2{1}
+    hstring(string s_) : s(s_), h1{0}, h2{0}
     {
         build();
     }
@@ -1649,8 +1773,8 @@ public:
     puv substring(int l, int r)
     { // 输出子串的哈希值
         if (l > r) swap(l, r);
-        int ans1 = (mod + h1[r + 1] - h1[l] * val1[r - l + 1] % mod1) % mod1;
-        int ans2 = (mod + h2[r + 1] - h2[l] * val2[r - l + 1] % mod2) % mod2;
+        int ans1 = (mod1 + h1[r + 1] - h1[l] * val1[r - l + 1] % mod1) % mod1;
+        int ans2 = (mod2 + h2[r + 1] - h2[l] * val2[r - l + 1] % mod2) % mod2;
         return {ans1, ans2};
     }
 
