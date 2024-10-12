@@ -14,7 +14,12 @@
         "tuple": "cpp",
         "cmath": "cpp",
         "complex": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "chrono": "cpp",
+        "span": "cpp",
+        "type_traits": "cpp",
+        "iosfwd": "cpp",
+        "ranges": "cpp"
     },
     "todo-tree.tree.scanMode": "workspace only"
 }

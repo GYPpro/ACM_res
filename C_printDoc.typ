@@ -1,8 +1,5 @@
-#import "@preview/tablex:0.0.6": tablex, hlinex, vlinex, colspanx, rowspanx
-
 #import "@preview/codelst:2.0.1": sourcecode
-// Display inline code in a small box
-// that retains the correct baseline.
+// Display inline code in a box
 #set text(font:("Times New Roman","Source Han Serif SC"))
 #show raw.where(block: false): box.with(
   fill: luma(230),
@@ -10,14 +7,18 @@
   outset: (y: 3pt),
   radius: 2pt,
 )
-// #set raw(align: center)
+#show raw.where(block: true): block.with(
+  fill: luma(240),
+  inset: 10pt,
+  radius: 4pt,
+)
 #show raw: set text(
     font: ("consolas", "Source Han Serif SC")
   )
 #set page(
   // flipped: true,
+  // background: [#image("background.png")]
   paper: "a4",
-//   background: [#image("background.png")]
 )
 #set text(
     font:("Times New Roman","Source Han Serif SC"),
@@ -25,37 +26,11 @@
     weight: "regular",
     size: 13pt,
 )
-
-
-#outline()
-#set heading(numbering: "1.")
-
+#show math.equation:set text(font:("New Computer Modern Math","Source Han Serif SC"))
 #let nxtIdx(name) = box[ #counter(name).step()#counter(name).display()]
-
-// Display block code in a larger block
-// // with more padding.
-// #show raw.where(block: true): block.with(
-//   fill: luma(230),
-//   inset: 7pt,
-//   radius: 4pt,
-// )
-#set par(
-  // first-line-indent: 1cm
-)
 #set math.equation(numbering: "(1)")
 
-
-
-// Display block code in a larger block
-// with more padding.
-#show raw.where(block: true): block.with(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-)
-
-#set math.equation(numbering: "(1)")
-
+#outline(depth: 2)
 
 #set page(
   paper:"a4",
@@ -79,6 +54,57 @@
 
 = #smallcaps[Basic]
 
+== `bitset.h`
+
+
+ #sourcecode[```cpp
+#include<bitset>
+int n;
+auto bin = bitset<32>(n);
+
+cout << bin;
+//输出二进制位
+
+cout << bin.to_ullong();
+//输出十进制
+
+bin[1] = 1
+//随机访问
+
+bin = !bin ^ (bin & bin | bitset<32>(1))
+//位运算
+
+bin != bin
+//比较运算符
+
+bin.count()
+//1的数量
+
+bin.test(i)
+//随机访问，类似std::vector::pos()
+
+bin.any()
+//有一位1就true
+
+bin.none()
+//全0就返回true
+
+bin.all()
+//全1就返回true
+
+bin.flip()
+//翻转全部
+
+bin.flip(i)
+//a[i] = !a[i]
+
+bin._Find_first()
+//第一个1的下标
+
+bin._Find_next(i)
+//从下标n往后第一个1的下标
+```]
+ #pagebreak() 
 == `pbds.h`
 
 
@@ -376,7 +402,201 @@ public:
         subUpdate(idx, idx, tar, 1, n, 1);
     }
 };
-  
+```]
+ #pagebreak() 
+== `segTree_add_setto.h`
+
+
+ #sourcecode[```cpp
+template <typename T>
+class SegTreeLazyRangeSet {
+  vector<T> tree, lazy;
+  vector<T> *arr;
+  vector<bool> ifLazy;
+  int n, root, n4, end;
+
+  void maintain(int cl, int cr, int p) {
+    int cm = cl + (cr - cl) / 2;
+    if (cl != cr && ifLazy[p]) {
+      lazy[p * 2] = lazy[p],ifLazy[p*2] = 1;
+      lazy[p * 2 + 1] = lazy[p],ifLazy[p*2+1] = 1;
+      tree[p * 2] = lazy[p] * (cm - cl + 1);
+      tree[p * 2 + 1] = lazy[p] * (cr - cm);
+      lazy[p] = 0;
+      ifLazy[p] = 0;
+    }
+  }
+
+  T range_sum(int l, int r, int cl, int cr, int p) {
+    if (l <= cl && cr <= r) return tree[p];
+    int m = cl + (cr - cl) / 2;
+    T sum = 0;
+    maintain(cl, cr, p);
+    if (l <= m) sum += range_sum(l, r, cl, m, p * 2);
+    if (r > m) sum += range_sum(l, r, m + 1, cr, p * 2 + 1);
+    return sum;
+  }
+
+  void range_set(int l, int r, T val, int cl, int cr, int p) {
+    if (l <= cl && cr <= r) {
+      lazy[p] = val;
+      ifLazy[p] = 1;
+      tree[p] = (cr - cl + 1) * val;
+      return;
+    }
+    int m = cl + (cr - cl) / 2;
+    maintain(cl, cr, p);
+    if (l <= m) range_set(l, r, val, cl, m, p * 2);
+    if (r > m) range_set(l, r, val, m + 1, cr, p * 2 + 1);
+    tree[p] = tree[p * 2] + tree[p * 2 + 1];
+  }
+
+  void build(int s, int t, int p) {
+    if (s == t) {
+      tree[p] = (*arr)[s];
+      return;
+    }
+    int m = s + (t - s) / 2;
+    build(s, m, p * 2);
+    build(m + 1, t, p * 2 + 1);
+    tree[p] = tree[p * 2] + tree[p * 2 + 1];
+  }
+
+ public:
+  explicit SegTreeLazyRangeSet<T>(vector<T> v) {
+    n = v.size();
+    n4 = n * 4;
+    tree = vector<T>(n4, 0);
+    lazy = vector<T>(n4, 0);
+    ifLazy = vector<bool>(n4,0);
+    arr = &v;
+    end = n - 1;
+    root = 1;
+    build(0, end, 1);
+    arr = nullptr;
+  }
+
+  void show(int p, int depth = 0) {
+    if (p > n4 || tree[p] == 0) return;
+    show(p * 2, depth + 1);
+    for (int i = 0; i < depth; ++i) putchar('\t');
+    printf("%d:%d\n", tree[p], lazy[p]);
+    show(p * 2 + 1, depth + 1);
+  }
+
+  T range_sum(int l, int r) { return range_sum(l, r, 0, end, root); }
+
+  void range_set(int l, int r, T val) { range_set(l, r, val, 0, end, root); }
+};  
+```]
+ #pagebreak() 
+== `segTree_mul_add.h`
+
+
+ #sourcecode[```cpp
+/*
+三种操作：（模数为mod） 
+1.区间乘val 
+2.区间加val
+3.区间和 
+*/
+#define int long long 
+#define lc p<<1
+#define rc p<<1|1
+const int N=1e5+10;
+int mod=1e9+7;
+struct node{
+	int l,r,sum,mul,add;
+}tr[4*N];
+vector<int> a(N);
+void pushup(int p){
+	tr[p].sum=tr[lc].sum+tr[rc].sum;
+	tr[p].sum%=mod;
+}
+void build(int p,int l,int r){
+	tr[p].l=l;tr[p].r=r; 
+	tr[p].mul=1;tr[p].add=0;
+	if(l==r){
+		tr[p].sum=a[l];
+		return;
+	}
+	int m=l+r>>1;
+	build(lc,l,m);
+	build(rc,m+1,r);
+	pushup(p);
+}
+void pushdown(int p){
+	tr[lc].sum=(tr[lc].sum*tr[p].mul+tr[p].add*(tr[lc].r-tr[lc].l+1))%mod;
+	tr[rc].sum=(tr[rc].sum*tr[p].mul+tr[p].add*(tr[rc].r-tr[rc].l+1))%mod;
+	tr[lc].mul=tr[lc].mul*tr[p].mul%mod;
+	tr[rc].mul=tr[rc].mul*tr[p].mul%mod;
+	tr[lc].add=(tr[lc].add*tr[p].mul+tr[p].add)%mod;
+	tr[rc].add=(tr[rc].add*tr[p].mul+tr[p].add)%mod;
+	tr[p].mul=1;tr[p].add=0;
+}
+void update_mul(int p,int l,int r,int val){
+	if(l<=tr[p].l&&tr[p].r<=r){
+		tr[p].sum=tr[p].sum*val%mod;
+		tr[p].mul=tr[p].mul*val%mod;
+		tr[p].add=tr[p].add*val%mod;
+		return;
+	}
+	pushdown(p);
+	int m=tr[p].l+tr[p].r>>1;
+	if(l<=m) update_mul(lc,l,r,val);
+	if(m<r) update_mul(rc,l,r,val);
+	pushup(p);
+	return;
+}
+void update_add(int p,int l,int r,int val){
+	if(l<=tr[p].l&&tr[p].r<=r){
+		tr[p].add=(tr[p].add+val)%mod;
+		tr[p].sum=(tr[p].sum+val*(tr[p].r-tr[p].l+1))%mod;
+		return;
+	}
+	pushdown(p);
+	int m=tr[p].l+tr[p].r>>1;
+	if(l<=m) update_add(lc,l,r,val);
+	if(m<r) update_add(rc,l,r,val);
+	pushup(p);
+	return;
+}
+int query(int p,int l,int r){
+	if(l<=tr[p].l&&tr[p].r<=r) return tr[p].sum;
+	pushdown(p);
+	int m=tr[p].l+tr[p].r>>1;
+	int sum=0;
+	if(l<=m) sum+=query(lc,l,r);
+	if(m<r) sum+=query(rc,l,r);
+	return sum%mod;
+}
+void solve(){
+	int n,m;
+	cin>>n>>m>>mod;
+	for(int i=1;i<=n;i++) cin>>a[i];
+	build(1,1,n);
+	while(m--){
+		int op;
+		cin>>op;
+		if(op==1){
+			int x,y,val;
+			cin>>x>>y>>val;
+			update_mul(1,x,y,val);
+		}
+		else if(op==2){
+			int x,y,val;
+			cin>>x>>y>>val;
+			update_add(1,x,y,val);
+		}
+		else{
+			int x,y;
+			cin>>x>>y;
+			cout<<query(1,x,y)<<"\n";
+		}
+	}
+	return;
+}
+
 ```]
  #pagebreak() 
 == `segTree_MX_MI.h`
@@ -674,6 +894,192 @@ class conj_diff_2{
  #pagebreak() 
 = #smallcaps[Geo]
 
+== `3_Dim.h`
+
+
+ #sourcecode[```cpp
+using ld = long double;
+
+struct Point3
+{
+    ld x, y, z;
+    Point3(ld x_ = 0, ld y_ = 0, ld z_ = 0) : x(x_), y(y_), z(z_) {}
+    Point3 &operator+=(Point3 p) &
+    {
+        return x += p.x, y += p.y, z += p.z, *this;
+    }
+    Point3 &operator-=(Point3 p) &
+    {
+        return x -= p.x, y -= p.y, z -= p.z, *this;
+    }
+    Point3 &operator*=(Point3 p) &
+    {
+        return x *= p.x, y *= p.y, z *= p.z, *this;
+    }
+    Point3 &operator*=(ld t) &
+    {
+        return x *= t, y *= t, z *= t, *this;
+    }
+    Point3 &operator/=(ld t) &
+    {
+        return x /= t, y /= t, z /= t, *this;
+    }
+    friend Point3 operator+(Point3 a, Point3 b) { return a += b; }
+    friend Point3 operator-(Point3 a, Point3 b) { return a -= b; }
+    friend Point3 operator*(Point3 a, Point3 b) { return a *= b; }
+    friend Point3 operator*(Point3 a, ld b) { return a *= b; }
+    friend Point3 operator*(ld a, Point3 b) { return b *= a; }
+    friend Point3 operator/(Point3 a, ld b) { return a /= b; }
+    friend auto &operator>>(istream &is, Point3 &p)
+    {
+        return is >> p.x >> p.y >> p.z;
+    }
+    friend auto &operator<<(ostream &os, Point3 p)
+    {
+        return os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
+    }
+};
+using P3 = Point3;
+struct Line3
+{
+    Point3 a, b;
+};
+using L3 = Line3;
+struct Plane
+{
+    Point3 u, v, w;
+};
+
+ld len(P3 p)
+{ // 原点到当前点的距离计算
+    return sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+}
+P3 crossEx(P3 a, P3 b)
+{ // 叉乘
+    P3 ans;
+    ans.x = a.y * b.z - a.z * b.y;
+    ans.y = a.z * b.x - a.x * b.z;
+    ans.z = a.x * b.y - a.y * b.x;
+    return ans;
+}
+ld cross(P3 a, P3 b)
+{
+    return len(crossEx(a, b));
+}
+ld dot(P3 a, P3 b)
+{ // 点乘
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+P3 getVec(Plane s)
+{ // 获取平面法向量
+    return crossEx(s.u - s.v, s.v - s.w);
+}
+ld dis(P3 a, P3 b)
+{ // 三维欧几里得距离公式
+    ld val = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
+    return sqrt(val);
+}
+P3 standardize(P3 vec)
+{ // 将三维向量转换为单位向量
+    return vec / len(vec);
+}
+
+bool onLine(P3 p1, P3 p2, P3 p3)
+{ // 三点是否共线
+    return sign(cross(p1 - p2, p3 - p2)) == 0;
+}
+bool onLine(Plane s)
+{
+    return onLine(s.u, s.v, s.w);
+}
+bool onPlane(P3 p1, P3 p2, P3 p3, P3 p4)
+{ // 四点是否共面
+    ld val = dot(getVec({p1, p2, p3}), p4 - p1);
+    return sign(val) == 0;
+}
+bool pointOnSegment(P3 p, L3 l)
+{
+    return sign(cross(p - l.a, p - l.b)) == 0 && min(l.a.x, l.b.x) <= p.x &&
+           p.x <= max(l.a.x, l.b.x) && min(l.a.y, l.b.y) <= p.y && p.y <= max(l.a.y, l.b.y) &&
+           min(l.a.z, l.b.z) <= p.z && p.z <= max(l.a.z, l.b.z);
+}
+bool pointOnSegmentEx(P3 p, L3 l)
+{ // pointOnSegment去除端点版
+    return sign(cross(p - l.a, p - l.b)) == 0 && min(l.a.x, l.b.x) < p.x &&
+           p.x < max(l.a.x, l.b.x) && min(l.a.y, l.b.y) < p.y && p.y < max(l.a.y, l.b.y) &&
+           min(l.a.z, l.b.z) < p.z && p.z < max(l.a.z, l.b.z);
+}
+bool pointOnSegmentSide(P3 p1, P3 p2, L3 l)
+{
+    if (!onPlane(p1, p2, l.a, l.b))
+    { // 特判不共面
+        return 0;
+    }
+    ld val = dot(crossEx(l.a - l.b, p1 - l.b), crossEx(l.a - l.b, p2 - l.b));
+    return sign(val) == 1;
+}
+bool pointOnPlaneSide(P3 p1, P3 p2, Plane s)
+{
+    ld val = dot(getVec(s), p1 - s.u) * dot(getVec(s), p2 - s.u);
+    return sign(val) == 1;
+}
+bool lineParallel(L3 l1, L3 l2)
+{ // 平行
+    return sign(cross(l1.a - l1.b, l2.a - l2.b)) == 0;
+}
+bool lineVertical(L3 l1, L3 l2)
+{ // 垂直
+    return sign(dot(l1.a - l1.b, l2.a - l2.b)) == 0;
+}
+
+```]
+ #pagebreak() 
+== `Cood_Convert.h`
+
+
+ #sourcecode[```cpp
+using p = pair<int,int>;
+```]
+ #pagebreak() 
+== `Distance.typ`
+
+
+ 
+=== 曼哈顿距离
+$ d(A,B) = |x_1 - x_2| + |y_1 - y_2| $
+
+=== 欧几里得距离
+$ d(A,B) = sqrt((x_1 - x_2)^2 + (y_1 - y_2)^2) $
+
+=== 切比雪夫距离
+$ d(A,B) = max(|x_1 - x_2|, |y_1 - y_2|) $
+
+=== 闵可夫斯基距离
+$ d(A,B) = (|x_1 - x_2|^p + |y_1 - y_2|^p)^{1/p} $
+
+=== 曼哈顿转切比雪夫
+
+对于直角坐标中的$A(x_1,y_1),B(x_2,y_2)$
+
+其曼哈顿距离
+$ d(A,B) = max(|(x_1+y_1) - (x_2+y_2)|,|(x_1-y_1)-(x_2-y_2|)) $
+即为点$A'(x_1+y_1,x_1-y_1),B'(x_2+y_2,x_2-y_2)$的切比雪夫距离。
+
+同理，其切比雪夫距离
+$ d(A,B) = max(|(x_1+y_1)/2-(x_2+y_2)/2| + |(x_1-y_1)/2-(x_2-y_2)/2|) $
+即为点$A'((x_1+y_1)/2,(x_1-y_1)/2),B'((x_2+y_2)/2, (x_2-y_2)/2)$的曼哈顿距离。
+
+综上：
+
+$
+"曼哈顿距离" & =>"切比雪夫距离：" \
+
+(x,y) & => (x+y,x-y) \
+
+"切比雪夫距离"&=>"曼哈顿距离："\
+
+(x,y) &=> ((x+y)/2,(x-y)/2) $
+ #pagebreak() 
 == `Rotating_Calipers.h`
 
 
@@ -764,6 +1170,76 @@ public:
 
 };
 
+
+```]
+ #pagebreak() 
+== `segIntersection.h`
+
+
+ #sourcecode[```cpp
+using pii = pair<int, int>
+
+#define fi first
+#define se second
+    const long double EPS = 1e-9;
+
+template <class T>
+int sign(T x)
+{
+    if (-EPS < x && x < EPS)
+        return 0;
+    return x < 0 ? -1 : 1;
+}
+
+// 叉乘
+template <class T>
+T cross(pair<T, T> a, pair<T, T> b)
+{
+    return a.fi * b.se - a.se * b.fi;
+}
+
+// 二维快速跨立实验
+template <class T>
+bool segIntersection(pair<T, T> l1, pair<T, T> l2)
+{
+    auto [s1, e1] = l1;
+    auto [s2, e2] = l2;
+    auto A = max(s1.fi, e1.fi), AA = min(s1.fi, e1.fi);
+    auto B = max(s1.se, e1.se), BB = min(s1.se, e1.se);
+    auto C = max(s2.fi, e2.fi), CC = min(s2.fi, e2.fi);
+    auto D = max(s2.se, e2.se), DD = min(s2.se, e2.se);
+    return A >= CC && B >= DD && C >= AA && D >= BB &&
+           sign(cross(s1, s2, e1) * cross(s1, e1, e2)) == 1 &&
+           sign(cross(s2, s1, e2) * cross(s2, e2, e1)) == 1;
+}
+
+//三维线段交点，需要P3封装，不相交返回{0,{}}
+pair<bool, P3> lineIntersection(L3 l1, L3 l2)
+{
+    if (!onPlane(l1.a, l1.b, l2.a, l2.b) || lineParallel(l1, l2))
+    {
+        return {0, {}};
+    }
+    auto [s1, e1] = l1;
+    auto [s2, e2] = l2;
+    ld val = 0;
+    if (!onPlane(l1.a, l1.b, {0, 0, 0}, {0, 0, 1}))
+    {
+        val = ((s1.x - s2.x) * (s2.y - e2.y) - (s1.y - s2.y) * (s2.x - e2.x)) /
+              ((s1.x - e1.x) * (s2.y - e2.y) - (s1.y - e1.y) * (s2.x - e2.x));
+    }
+    else if (!onPlane(l1.a, l1.b, {0, 0, 0}, {0, 1, 0}))
+    {
+        val = ((s1.x - s2.x) * (s2.z - e2.z) - (s1.z - s2.z) * (s2.x - e2.x)) /
+              ((s1.x - e1.x) * (s2.z - e2.z) - (s1.z - e1.z) * (s2.x - e2.x));
+    }
+    else
+    {
+        val = ((s1.y - s2.y) * (s2.z - e2.z) - (s1.z - s2.z) * (s2.y - e2.y)) /
+              ((s1.y - e1.y) * (s2.z - e2.z) - (s1.z - e1.z) * (s2.y - e2.y));
+    }
+    return {1, s1 + (e1 - s1) * val};
+}
 
 ```]
  #pagebreak() 
@@ -1030,6 +1506,370 @@ public:
     }
 };
 
+```]
+ #pagebreak() 
+== #smallcaps[Path]
+
+=== `SCSP.h`
+
+
+ #sourcecode[```cpp
+// Sides Change Shortest Path
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+const ll inf=1e18;
+#define N 200505
+#define mod 1000000007
+//换边最短路
+int n,m,qu;
+struct Original_edge{int u,v;ll len;}OE[N];
+struct tabl{int to,id;ll len;};
+struct node{int id; ll len; bool operator < (const node &x) const {return x.len<len;}};
+vector<tabl> edge[N<<1];
+priority_queue<node> q;
+int lstvis[N]={0},l[N]={0},r[N]={0},ind[N]={0},vis[N];
+ll t[N<<4]={0};
+ll disT[N],disN[N];
+bool on_path[N];
+int path_cnt=0;
+
+void dj(int p,ll dis[],int f)
+{
+    for(int i=1;i<=n;i++)
+    {
+        vis[i]=0;
+        dis[i]=inf;
+    }
+    dis[p]=0;
+    q.push((node){p,0});
+    while(!q.empty())
+    {
+        node temp=q.top();
+        q.pop();
+        int u=temp.id;
+        ll w=temp.len;
+        if(vis[u])continue;
+        vis[u]++;
+        dis[u]=w;
+        for(auto re:edge[u])
+        {
+            int v=re.to;
+            int id=re.id;
+            ll tw=re.len;
+
+            if(dis[v]<=w+tw)continue;
+            
+            dis[v]=w+tw;
+
+            lstvis[v]=id;  //记前驱
+
+            q.push((node){v,w+tw});
+
+            if(f==1&&!on_path[v])l[v]=l[u];  //记住前后缀
+            if(f==2&&!on_path[v])r[v]=r[u];
+        }
+    }
+}
+void trace()
+{
+    int u=1;
+    on_path[u]=true;
+    l[u]=r[u]=0;
+
+    for(int i=1;u!=n;i++)
+    {
+        int e_id=lstvis[u];  //取前驱
+        ind[e_id]=i;      //做标记
+
+        u^=OE[e_id].u^OE[e_id].v;  //取前点
+        on_path[u]=true;       //做标记
+        l[u]=r[u]=i;      //做标记
+        path_cnt++;      //路长
+    }
+}
+void build(int le,int ri,int p)
+{
+    t[p]=inf;
+    if(le==ri)return;
+    int mid=(le+ri)>>1,lef=(p<<1),rig=lef|1;
+    build(le,mid,lef);
+    build(mid+1,ri,rig);
+}
+void update(int L,int R,int x,int y,int p,ll k)
+{
+    if(x>y)return;
+    if(x<=L&&R<=y)
+    {
+        t[p]=min(t[p],k);
+        return;
+    }
+    int mid=(L+R)>>1,lef=(p<<1),rig=lef|1;
+    if(x<=mid)update(L,mid,x,y,lef,k);
+    if(y>mid)update(mid+1,R,x,y,rig,k);
+}
+ll query(int L,int R,int x,int y,int p)
+{
+    ll ans=t[p];
+    if(L==R)
+    {
+        return ans;
+    }
+    int mid=(L+R)>>1,lef=(p<<1),rig=lef|1;
+    if(y<=mid)ans=min(ans,query(L,mid,x,y,lef));
+    else ans=min(ans,query(mid+1,R,x,y,rig));
+    return ans;
+}
+void solve()
+{
+    memset(on_path,false,sizeof(on_path));
+    cin>>n>>m>>qu;
+    for(int i=1;i<=m;i++)
+    {
+        int u,v;
+        ll w;
+        cin>>u>>v>>w;
+
+        OE[i].u=u;
+        OE[i].v=v;
+        OE[i].len=w;
+
+        edge[u].push_back({v,i,w});
+        edge[v].push_back({u,i,w});
+    }   
+
+    dj(n,disN,0);
+    trace();
+    dj(1,disT,1);
+    dj(n,disN,2);
+
+    build(1,path_cnt,1);
+
+    for(int i=1;i<=m;i++)
+    {
+        int u=OE[i].u,v=OE[i].v;
+        ll w=OE[i].len;
+        if(ind[i])continue;
+        update(1,path_cnt,l[u]+1,r[v],1,disT[u]+w+disN[v]);
+        update(1,path_cnt,l[v]+1,r[u],1,disT[v]+w+disN[u]);
+    }
+
+    while(qu--)
+    {
+        int ti;
+        ll ch;
+        ll ans;
+        cin>>ti>>ch;
+        if(ind[ti])
+        {
+            ans=disT[n]-OE[ti].len+ch;
+            if(ch>OE[ti].len)
+            {
+                ans=min(ans,query(1,path_cnt,ind[ti],ind[ti],1));
+            }
+        }
+        else 
+        {
+            ans=disT[n];
+            if(OE[ti].len>ch)
+            {
+                int u=OE[ti].u,v=OE[ti].v;
+                ans=min(ans,min(disT[u]+ch+disN[v],disT[v]+ch+disN[u]));
+            }
+        }
+        cout<<ans<<"\n";
+    }
+}
+```]
+ #pagebreak() 
+=== `SPFA+SLE.h`
+
+
+ #sourcecode[```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long 
+const int inf =1e9+7;
+////////////////////
+struct p3008  //链式前向星
+{
+    int to;
+    int nex;
+    int v;
+}a[300000];
+int head[25006]={0},cnt=0;
+
+int dis[25006]={0};  //距离
+
+void add(int u,int v,int w)
+{
+    a[++cnt].nex=head[u];
+    a[cnt].to=v;
+    a[cnt].v=w;
+    head[u]=cnt;
+}
+/////////////////////////////////
+//SPFA，但是双端队列优化
+//小的放队头，大的放队尾
+void spfa(int t,int s)
+{
+    for(int i=1;i<=t;i++)dis[i]=inf;  //初始化距离
+    deque<int> q;
+    vector<int> vis(t+1),cou(t+1);
+
+    q.push_front(s);  //起点入队
+
+    dis[s]=0;  //起点初始化
+    vis[s]++;
+
+    while(!q.empty())
+    {
+        int u=q.front();  //取出队头
+        q.pop_front();
+
+        cou[u]++;
+
+        if(cou[u]>t)return;  //遍历次数过大，出现负环
+
+        for(int i=head[u];i;i=a[i].nex)  //遍历儿子
+        {
+            int v=a[i].to;
+            int w=a[i].v;
+            if(dis[v]>dis[u]+w)  //可松弛
+            {
+                dis[v]=dis[u]+w;  //松弛操作
+
+                if(!vis[v])
+                {
+                    if(q.empty())q.push_back(v);       //特判！队空则随便入队
+                    else if(dis[q.front()]>=dis[v])q.push_front(v);  //小的放队头
+                    else q.push_back(v);  //大的放队尾
+                    vis[v]++;
+                }
+            }
+        }
+        vis[u]--;  //取消入队标记
+    }
+}
+void solve()
+{
+    int t,r,p,s;
+    cin>>t>>r>>p>>s;
+    for(int i=1;i<=r;i++)
+    {
+        int u,v;
+        int w;
+        cin>>u>>v>>w;
+        add(u,v,w);
+        add(v,u,w);
+    }
+    for(int i=1;i<=p;i++)
+    {
+        int u,v;
+        int w;
+        cin>>u>>v>>w;
+        add(u,v,w);
+    }
+
+    spfa(t,s);  //建好边调用即可，t是点数，s是起点
+    
+    for(int i=1;i<=t;i++)
+    {
+        if(dis[i]>=inf)cout<<"NO PATH\n";
+        else cout<<dis[i]<<"\n";
+    }
+}
+```]
+ #pagebreak() 
+=== `SPFA.h`
+
+
+ #sourcecode[```cpp
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+/////////////////////////////////////
+struct p4779SPFA  //链式前向星
+{
+    int to;
+    int nex;
+    ll w;
+}star[550000];
+int head[100005]={0},cnt=0;
+void add(int u,int v,ll w)
+{
+    star[++cnt].to=v;
+    star[cnt].nex=head[u];
+    star[cnt].w=w;
+    head[u]=cnt;
+}
+///////////////////////////////
+
+//SPFA,一款暴力的最短路算法
+//常用于网络流、判负环、带负边的最短路
+//暴力版的dj，每次松弛都让未入队的点入队，直到无法松弛为止
+int n,m,s;
+ll dis[100005]={0};   //距离
+int times[100005]={0}; //遍历次数
+bool vis[100005];  //入队情况
+void SPFA()
+{
+    memset(vis, 0 ,sizeof(vis)); //清空vis
+    for(int i=1;i<=n;i++)dis[i]=2147483647;  //距离初始化为无穷大
+    dis[s]=0;  //起点归零
+    queue<int> q;  //队列
+    q.push(s);
+    while(!q.empty())
+    {
+        int temp=q.front();
+        q.pop();
+        times[temp]++;
+        vis[temp]=false;  //出队判定
+
+        if(times[temp]>2+n)  //判负环  ，遍历次数过多说明出现了负环
+        {
+            times[s]=n+10;  //做标记
+            break;
+        }
+
+        for(int i=head[temp];i;i=star[i].nex)  //遍历儿子
+        {
+            int v=star[i].to;
+            if(dis[v]>dis[temp]+star[i].w)  //可松弛
+            {
+                dis[v]=dis[temp]+star[i].w;//松弛
+                if(!vis[v])  //未入队则入队
+                {
+                    q.push(v);
+                    vis[v]=true;
+                }
+            }
+        }
+    }
+
+}
+void solve()
+{
+    //spfa用于求最短路
+    cin>>n>>m>>s;
+    for(int i=1;i<=m;i++)
+    {
+        int u,v;
+        ll w;
+        cin>>u>>v>>w;
+        add(u,v,w);
+    }
+
+    SPFA();//建边后调用即可
+
+    if(times[s]>n)  //找负环
+    {
+        cout<<"minus circle!\n";
+        return;
+    }
+    for(int i=1;i<=n;i++)cout<<dis[i]<<" ";
+    cout<<"\n";
+}
 ```]
  #pagebreak() 
 == #smallcaps[Tree]
@@ -1612,6 +2452,71 @@ using F = Frac<int>;
  #pagebreak() 
 = #smallcaps[String]
 
+== `AC_automaton.h`
+
+
+ #sourcecode[```cpp
+struct ACAutomaton
+{
+    static constexpr int N = 1e6 + 10;
+    int ch[N][26], fail[N], cntNodes;
+    int cnt[N];
+    ACAutomaton()
+    {
+        cntNodes = 1;
+    }
+    void insert(string s)
+    {
+        int u = 1;
+        for (auto c : s)
+        {
+            int &v = ch[u][c - 'a'];
+            if (!v)
+                v = ++cntNodes;
+            u = v;
+        }
+        cnt[u]++;
+    }
+    void build()
+    {
+        fill(ch[0], ch[0] + 26, 1);
+        queue<int> q;
+        q.push(1);
+        while (!q.empty())
+        {
+            int u = q.front();
+            q.pop();
+            for (int i = 0; i < 26; i++)
+            {
+                int &v = ch[u][i];
+                if (!v)
+                    v = ch[fail[u]][i];
+                else
+                {
+                    fail[v] = ch[fail[u]][i];
+                    q.push(v);
+                }
+            }
+        }
+    }
+    LL query(string t)
+    {
+        LL ans = 0;
+        int u = 1;
+        for (auto c : t)
+        {
+            u = ch[u][c - 'a'];
+            for (int v = u; v && ~cnt[v]; v = fail[v])
+            {
+                ans += cnt[v];
+                cnt[v] = -1;
+            }
+        }
+        return ans;
+    }
+};
+```]
+ #pagebreak() 
 == `compress_print.h`
 
 

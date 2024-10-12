@@ -112,4 +112,3 @@ public:
         subUpdate(idx, idx, tar, 1, n, 1);
     }
 };
-  

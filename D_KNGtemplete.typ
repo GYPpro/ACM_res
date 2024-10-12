@@ -30,7 +30,27 @@
 #let nxtIdx(name) = box[ #counter(name).step()#counter(name).display()]
 #set math.equation(numbering: "(1)")
 
-#outline(depth: 2)
+#set page(
+  paper:"a4",
+  number-align: right,
+  margin: (x:2cm,y:2.5cm),
+  header: [
+    #box(baseline:5pt)[#set text(
+      size: 11pt,
+    )
+    #align(
+      left+bottom, 
+      [
+        #smallcaps[ ]
+        #h(1fr)#text(" ",fill:rgb("#898989"));
+      ]
+    )]
+    #line(start: (0pt,-10pt),end:(483pt,-10pt))
+  ],
+  numbering: "1/1"
+)
+#set math.mat(delim: "[")
+#set math.vec(delim: "[")
 
 #set page(
   paper:"a4",
@@ -51,4 +71,4 @@
   ],
   numbering: "1/1"
 )
-
+///MAIN---MAIN///
