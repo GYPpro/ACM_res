@@ -53,3 +53,49 @@ public:
     } 
 };
 
+//----------VERSION 2-----------
+
+
+void solve(){
+	int n,m,root;
+	cin>>n>>m>>root;
+	vector<int> e[n+1],dep(n+1);
+	vector<vector<int>> fa(n+1,vector<int>(21));
+	for(int i=1;i<n;i++){
+		int u,v;
+		cin>>u>>v;
+		e[u].push_back(v);
+		e[v].push_back(u);
+	}
+	function<void(int,int)> dfs=[&](int id,int u){
+		fa[id][0]=u;
+		dep[id]=dep[u]+1;
+		for(int i=1;i<=20;i++) fa[id][i]=fa[fa[id][i-1]][i-1];
+		for(auto x:e[id]){
+			if(x==u) continue;
+			dfs(x,id);
+		}
+	};
+	dfs(root,root); 
+	function<int(int,int)> lca=[&](int x,int y){
+		if(dep[x]<dep[y]) swap(x,y);
+		int tmp=dep[x]-dep[y];
+		for(int i=0;i<=20;i++){
+			if(tmp>>i&1) x=fa[x][i];
+		}
+		if(x==y) return x;
+		for(int i=20;i>=0;i--){
+			if(fa[x][i]!=fa[y][i]){
+				x=fa[x][i];
+				y=fa[y][i];
+			}
+		}
+		return fa[x][0];
+	};
+	while(m--){
+		int a,b;
+		cin>>a>>b;
+		cout<<lca(a,b)<<"\n";
+	}
+	return;
+} 

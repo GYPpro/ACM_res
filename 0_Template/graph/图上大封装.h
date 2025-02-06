@@ -1,32 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 using pii = pair<int,int>;
-
-struct DSU {
-    vector<int> fa;
-    DSU(int n) : fa(n + 1) {
-        iota(fa.begin(), fa.end(), 0);
-    }
-    int get(int x) {
-        while (x != fa[x])
-            x = fa[x] = fa[fa[x]];
-        return x;
-    }
-    bool merge(int x, int y)
-    { // 设x是y的祖先
-        x = get(x), y = get(y);
-        if (x == y)
-            return false;
-        fa[y] = x;
-        return true;
-    }
-    bool same(int x, int y)
-    {
-        return get(x) == get(y);
-    }
-};
-
-
 class graph {
 public:
 using tii = array<int,3>;
@@ -123,9 +97,7 @@ public:
     void runBCC(char mod = 'E') {
         reset(bcc),reset(sz);
         if(mod == 'E') {
-            // cout << "yes\n";
             auto [ib,_] = this->findBridge();
-            // for(auto [u,v]:_) cout << u << " " << v << "|";
             using itf = function<void(int,int)>;
             dc = 0;
             itf dfs = [&](int u,int tv) -> void {
@@ -137,12 +109,11 @@ public:
                 }
             };
             for(int i = 1;i <= n;i ++) if(!bcc[i].size()) ++dc,dfs(i,0);
-        } else {
+        } else if(mod == 'D') {
             auto ic = this->findCut();
             using itf = function<void(int,int)>;
             dc = 0;
             itf dfs = [&](int u,int f) -> void {
-                // bcc[u].pb(bc);
                 for(auto [v,_]:cnj[u]) {
                     if(v == f || (!ic[v] && bcc[v].size())) continue;
                     else if(ic[v] || bcc[v].size()) bcc[v].pb(dc);
@@ -150,17 +121,18 @@ public:
                 } 
             };
             for(int i = 1;i <= n;i ++) if(!bcc[i].size()) ++dc,bcc[i].pb(dc),dfs(i,0);
-        }
+        } else assert(0);
     }
 
-    /**最小生成树
-     * Kruskal:O(m log m) for 稠密图
-     * Prim:O((n+m) log n) for 稀疏图
+    /**最小生成树，默认Kruskal
+     * Kruskal:O(m log m) for 稀疏图 
+     * Prim:O((n+m) log n) for 稠密图
      * 返回邻接表
      */
     vector<vector<pii>> runMST(string method = "Kruskal") {
         graph ng(n);
         using tii = array<int,3>;
+        const int INF = 1e17;
         if (method == "Kruskal") {
             priority_queue<tii,vector<tii>,greater<tii>> q;
             DSU dsu(n+1);
@@ -177,14 +149,29 @@ public:
             return ng.cnj;
         }
         else if (method == "Prim") {
-            //Fuck链式前向星
-            
-
-        }
-    }
-
-    vector<vector<pii>> runDMST(string method = "Tarjin") {
-
+            vector<int> dis(n+1,INF);
+            using fii = array<int,4>;
+            priority_queue<fii,vector<fii>,greater<fii>> q;
+            q.push({0,0,1});
+            dis[1] = 0;
+            vector<int> LOCK(n+1);
+            while(q.size())
+            {
+                auto [_,w,f,u] = q.top();
+                q.pop();
+                if(LOCK[u]) continue;
+                else LOCK[u] = 1;
+                if(f) ng.addUnordEdge(f,u,w);
+                for(auto [v,wv]:cnj[u])
+                {
+                    if(dis[v] > dis[u] + wv) {
+                        dis[v] = dis[u] + wv;
+                        q.push({dis[v],wv,u,v});
+                    }
+                }
+            }
+            return ng.cnj;
+        } else assert(0);
     }
 
     /**

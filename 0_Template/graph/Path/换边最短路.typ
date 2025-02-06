@@ -139,7 +139,7 @@
 从而我们可以在O(logn)的时间内回答每个问题
 
 总的复杂度为O((m+n+q)logn)
-=== solution:
+==== solution:
 #sourcecode[
 ```cpp
 #include<bits/stdc++.h>

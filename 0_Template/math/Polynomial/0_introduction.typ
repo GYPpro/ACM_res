@@ -30,8 +30,27 @@
 #let nxtIdx(name) = box[ #counter(name).step()#counter(name).display()]
 #set math.equation(numbering: "(1)")
 
-#set heading(numbering: "1.1.1")
-#outline(depth: 3)
+#set page(
+  paper:"a4",
+  number-align: right,
+  margin: (x:2cm,y:2.5cm),
+  header: [
+    #box(baseline:5pt)[#set text(
+      size: 11pt,
+    )
+    #align(
+      left+bottom, 
+      [
+        #smallcaps[ ]
+        #h(1fr)#text(" ",fill:rgb("#898989"));
+      ]
+    )]
+    #line(start: (0pt,-10pt),end:(483pt,-10pt))
+  ],
+  numbering: "1/1"
+)
+#set math.mat(delim: "[")
+#set math.vec(delim: "[")
 
 #set page(
   paper:"a4",
@@ -52,4 +71,9 @@
   ],
   numbering: "1/1"
 )
-
+///MAIN---MAIN///
+#figure(caption: "多项式开根.png")[#image("0_Template\math\Polynomial\多项式开根.png")]
+#figure(caption: "多项式求逆元的公式及推导.png")[#image("0_Template\math\Polynomial\多项式求逆元的公式及推导.png")]
+#figure(caption: "分治fft.png")[#image("0_Template\math\Polynomial\分治fft.png")]
+#figure(caption: "FFT思想图解.png")[#image("0_Template\math\Polynomial\FFT思想图解.png")]
+#figure(caption: "FFT思想图解2.png")[#image("0_Template\math\Polynomial\FFT思想图解2.png")]

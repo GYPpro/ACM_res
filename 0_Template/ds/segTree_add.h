@@ -3,14 +3,6 @@
 template <class TYPE_NAME>
 class lazyTree
 {
-    /*
-     *  TYPE_NAME需要支持：+ += != 和自定义的合并运算符
-     *  实现了懒惰标记，仅支持区间批量增加
-     *  区间批量减需要TYPE_NAME支持-，且有-a = 0 - a
-     *  额外处理了一个单点修改为对应值的函数，非原生实现，其复杂度为 4logn
-     *  不提供在线
-     *  不提供持久化
-     */
 private:
     vector<TYPE_NAME> d;
     vector<TYPE_NAME> a;

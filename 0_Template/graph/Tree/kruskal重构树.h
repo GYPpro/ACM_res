@@ -21,7 +21,7 @@ void solve(){
 		fa[fx]=fy;
 	};
 	int cnt;
-	auto Kruskal=[&]()->void{
+	auto Kruskal=[&]()->void {
 		cnt=n;
 		while(!q.empty()){
 			auto a=q.top();q.pop();
