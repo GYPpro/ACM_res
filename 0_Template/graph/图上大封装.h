@@ -16,7 +16,6 @@ using tii = array<int,3>;
         reset(cnj);
         reset(h);
     };
-
     graph(vector<vector<pii>> _cnj) {
         n = _cnj.size();
         cnj = _cnj;
@@ -45,7 +44,6 @@ public:
         edges.pb({u,v,w});
         edges.pb({v,u,w});
     }
-
     // 强连通分量缩点
     void runSCC() {
         reset(dfn), reset(scc), reset(sz);
@@ -89,7 +87,6 @@ public:
             if (!dfn[i])
                 dfs(i);
     }
-
     /**双联通分量缩点
      * E：边双：支持重边
      * D：点双
@@ -210,7 +207,6 @@ public:
         int dfscnt = 0;
         using itf = function<void(int,int)>;
         itf dfs = [&](int u,int f) {
-            // cout << "et:" << u << " ";
             vis[u] = 1;
             low[u] = dfn[u] = ++dfscnt;
             int ch = 0;
@@ -225,11 +221,6 @@ public:
             if(f == u && ch >= 2 && !ic[u]) ic[u] = 1;
         };
         for(int i = 1;i <= n;i ++) if(!vis[i]) dfscnt = 0, dfs(i,i);
-        // dfs(1,1);
         return ic;
-    }
-
-    // 生成kruskal重构树，返回邻接表
-    void kruskalRefactor() {
     }
 };

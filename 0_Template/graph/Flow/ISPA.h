@@ -107,7 +107,6 @@ void solve()
         cin>>u>>v>>w;
         add(u,v,w);
     }
-    //ll temp;
     bfs(t);
     isap(s,t);
     cout<<ans<<"\n";

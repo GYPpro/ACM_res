@@ -2,9 +2,7 @@
 n(<=100)个点 m(<=500)条带权无向边G
 给定k（<=10) 个节点的点集S，选出G的子图G1
 使得S属于G1，G1是联通图  边权和最小
- 
 */
-
 #include<bits/stdc++.h>
 using namespace std;
 #define int long long

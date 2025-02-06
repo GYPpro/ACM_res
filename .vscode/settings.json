@@ -19,7 +19,12 @@
         "span": "cpp",
         "type_traits": "cpp",
         "iosfwd": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "cstdint": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "valarray": "cpp"
     },
-    "todo-tree.tree.scanMode": "workspace only"
+    "todo-tree.tree.scanMode": "workspace only",
+    "C_Cpp.intelliSenseCachePath": "D:\\VSCcache"
 }

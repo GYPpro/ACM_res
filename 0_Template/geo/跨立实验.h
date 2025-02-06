@@ -1,37 +1,55 @@
-using pii = pair<int, int>
 
+using dot = pair<int,int>;
+using lin = pair<dot,dot>;
+
+#define x first
+#define y second
 #define fi first
 #define se second
-    const long double EPS = 1e-9;
 
-template <class T>
-int sign(T x)
-{
-    if (-EPS < x && x < EPS)
-        return 0;
+const int TRF = 1e11;
+
+int cross(dot a,dot b) {
+    return a.x * b.y - a.y * b.x;
+}
+
+dot dsc(dot a,dot b) {
+    return {a.x - b.x,a.y - b.y};
+}
+
+dot add(dot a,dot b) {
+    return {a.x + b.x,a.y + b.y};
+}
+
+int cross(dot p1,dot p2,dot p0) {
+    return cross(dsc(p1,p0),dsc(p2,p0));
+}
+
+int sign(int x) {
+    if(x == 0) return 0;
     return x < 0 ? -1 : 1;
 }
 
-// 叉乘
-template <class T>
-T cross(pair<T, T> a, pair<T, T> b)
-{
-    return a.fi * b.se - a.se * b.fi;
-}
+bool onseg(lin l,dot p) {
+    return sign( cross(p,l.fi,l.se) == 0 ) && 
+    (min(l.fi.x,l.se.x) <= p.x && p.x <= max(l.fi.x,l.se.x)) &&
+    (min(l.fi.y,l.se.y) <= p.y && p.y <= max(l.fi.y,l.se.y)) ;
+};
 
-// 二维快速跨立实验
-template <class T>
-bool segIntersection(pair<T, T> l1, pair<T, T> l2)
-{
-    auto [s1, e1] = l1;
-    auto [s2, e2] = l2;
-    auto A = max(s1.fi, e1.fi), AA = min(s1.fi, e1.fi);
-    auto B = max(s1.se, e1.se), BB = min(s1.se, e1.se);
-    auto C = max(s2.fi, e2.fi), CC = min(s2.fi, e2.fi);
-    auto D = max(s2.se, e2.se), DD = min(s2.se, e2.se);
-    return A >= CC && B >= DD && C >= AA && D >= BB &&
-           sign(cross(s1, s2, e1) * cross(s1, e1, e2)) == 1 &&
-           sign(cross(s2, s1, e2) * cross(s2, e2, e1)) == 1;
+bool sic(lin a,lin b) {
+    auto [s1,e1] = a;
+    auto [s2,e2] = b;
+    auto A = max(s1.x,e1.x),AA = min(s1.x,e1.x);
+    auto B = max(s1.y,e1.y),BB = min(s1.y,e1.y);
+    auto C = max(s2.x,e2.x),CC = min(s2.x,e2.x);
+    auto D = max(s2.y,e2.y),DD = min(s2.y,e2.y);
+
+    bool flag_cross = (sign(cross(s1,s2,e1)) * sign(cross(s1,e1,e2))) == 1 &&
+                      (sign(cross(s2,s1,e2)) * sign(cross(s2,e2,e1))) == 1;
+    bool flag_onseg = onseg(a,s2) || onseg(a,e2) ||
+                      onseg(a,s2) || onseg(a,e2);
+
+    return A >= CC && B >= DD && C >= AA && D >= BB && (flag_cross || flag_onseg); 
 }
 
 //三维线段交点，需要P3封装，不相交返回{0,{}}

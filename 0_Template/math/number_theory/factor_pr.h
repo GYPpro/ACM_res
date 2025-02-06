@@ -9,13 +9,11 @@ class Pollard_Rho
 private:
 
     vector<int> B;
-
     int mul(int a, int b, int m)
     {
         int r = a * b - m * (int)(1.L / m * a * b);
         return r - m * (r >= m) + m * (r < 0);
     }
-
     int mypow(int a, int b, int m)
     {
         int res = 1 % m;
@@ -28,7 +26,6 @@ private:
         }
         return res;
     }
-
     bool MR(int n)
     {
         if (n <= 1)
